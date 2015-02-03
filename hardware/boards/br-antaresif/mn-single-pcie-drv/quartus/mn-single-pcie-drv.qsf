@@ -73,7 +73,7 @@ set_global_assignment -name RESERVE_FLASH_NCE_AFTER_CONFIGURATION       "USE AS 
 set_global_assignment -name RESERVE_DCLK_AFTER_CONFIGURATION            "USE AS REGULAR IO"
 
 # Get ipcore library
-set_global_assignment -name QIP_FILE            ../../../../ipcore/altera/components/libcommon.qip
+set_global_assignment -name QIP_FILE            ../../../../../repository/openPOWERLINK/hardware/ipcore/altera/components/libcommon.qip
 
 # Design settings
 set_global_assignment -name TOP_LEVEL_ENTITY    toplevel
