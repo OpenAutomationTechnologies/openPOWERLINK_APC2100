@@ -1,4 +1,4 @@
 [submodule "repository/openPOWERLINK"]
 	path = repository/openPOWERLINK
-	url = git@github.com:zelenkaj/openPOWERLINK_V2.git
+	url = https://github.com/zelenkaj/openPOWERLINK_V2
 	branch = feature-pcie
