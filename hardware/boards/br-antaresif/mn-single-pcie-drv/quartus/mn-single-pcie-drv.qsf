@@ -79,7 +79,8 @@ set_global_assignment -name QIP_FILE            ../../../../ipcore/altera/compon
 set_global_assignment -name TOP_LEVEL_ENTITY    toplevel
 set_global_assignment -name SDC_FILE            mnSinglePcieDrv.sdc
 set_global_assignment -name VHDL_FILE           toplevel.vhd
-set_global_assignment -name QIP_FILE            ../../common/ipcore/pll.qip
+set_global_assignment -name QIP_FILE            ../../common/ipcore/pll/pll.qip
+set_global_assignment -name QIP_FILE            ../../common/ipcore/gxReconfig/gxReconfig.qip
 set_global_assignment -name QIP_FILE            mnSinglePcieDrv/synthesis/mnSinglePcieDrv.qip
 
 # pin assignments

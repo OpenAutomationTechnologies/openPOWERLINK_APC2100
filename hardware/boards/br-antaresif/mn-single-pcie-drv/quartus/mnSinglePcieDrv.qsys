@@ -289,7 +289,7 @@
  <parameter name="projectName">mn-single-pcie-drv.qpf</parameter>
  <parameter name="sopcBorderPoints" value="false" />
  <parameter name="systemHash" value="1" />
- <parameter name="timeStamp" value="1422020564550" />
+ <parameter name="timeStamp" value="1422553430825" />
  <parameter name="useTestBenchNamingPattern" value="false" />
  <instanceScript></instanceScript>
  <interface name="clk50" internal="clk50.clk_in" type="clock" dir="end" />
@@ -401,6 +401,11 @@
    name="host_benchmark_pio"
    internal="host_benchmark.external_connection"
    type="conduit"
+   dir="end" />
+ <interface
+   name="pcie_cal_blk_clk"
+   internal="pcie_hard_ip_0.cal_blk_clk"
+   type="clock"
    dir="end" />
  <module kind="clock_source" version="13.0" enabled="1" name="clk50">
   <parameter name="clockFrequency" value="50000000" />
@@ -666,9 +671,9 @@
   <parameter name="SLAVE_ADDRESS_MAP_3_2" value="0" />
   <parameter name="SLAVE_ADDRESS_MAP_5_4" value="0" />
   <parameter name="deviceFamily" value="Cyclone IV GX" />
-  <parameter name="AUTO_CAL_BLK_CLK_CLOCK_RATE" value="100000000" />
-  <parameter name="AUTO_CAL_BLK_CLK_CLOCK_DOMAIN" value="1" />
-  <parameter name="AUTO_CAL_BLK_CLK_RESET_DOMAIN" value="1" />
+  <parameter name="AUTO_CAL_BLK_CLK_CLOCK_RATE" value="0" />
+  <parameter name="AUTO_CAL_BLK_CLK_CLOCK_DOMAIN" value="5" />
+  <parameter name="AUTO_CAL_BLK_CLK_RESET_DOMAIN" value="5" />
   <parameter name="AUTO_DEVICE" value="EP4CGX30CF19I7" />
  </module>
  <module kind="clock_source" version="13.0" enabled="1" name="clk125">
@@ -901,11 +906,6 @@
    version="13.0"
    start="clk125.clk"
    end="pcie_hard_ip_0.fixedclk" />
- <connection
-   kind="clock"
-   version="13.0"
-   start="clk100.clk"
-   end="pcie_hard_ip_0.cal_blk_clk" />
  <connection
    kind="reset"
    version="13.0"

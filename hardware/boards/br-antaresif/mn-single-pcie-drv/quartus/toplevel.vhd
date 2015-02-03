@@ -146,6 +146,7 @@ architecture rtl of toplevel is
             epcs_flash_sce                              : out   std_logic;
             epcs_flash_sdo                              : out   std_logic;
             epcs_flash_data0                            : in    std_logic;
+            pcie_cal_blk_clk_clk                        : in    std_logic;
             pcie_rx_in_rx_datain_0                      : in    std_logic;
             pcie_tx_out_tx_dataout_0                    : out   std_logic;
             pcie_reconfig_togxb_data                    : in    std_logic_vector(3 downto 0);
@@ -197,6 +198,20 @@ architecture rtl of toplevel is
     signal clk100       : std_logic;
     signal clk125       : std_logic;
     signal pllLocked    : std_logic;
+
+    -- GX reconfig component
+    component gxReconfig
+        port (
+            reconfig_clk        : in std_logic;
+            reconfig_fromgxb    : in std_logic_vector(4 downto 0);
+            busy                : out std_logic;
+            reconfig_togxb      : out std_logic_vector(3 downto 0)
+        );
+    end component;
+
+    signal reconfigToGxb    : std_logic_vector(3 downto 0);
+    signal reconfigFromGxb  : std_logic_vector(4 downto 0);
+    signal reconfigBusy     : std_logic;
 begin
     oRmiiRefClk <= clk50; --FIXME: Use phase shift clock?
 
@@ -233,18 +248,19 @@ begin
             epcs_flash_sdo                          => oFlash_DI,
             epcs_flash_data0                        => iFlash_DO,
 
+            pcie_cal_blk_clk_clk                    => clk50,
             pcie_rx_in_rx_datain_0                  => iPCIe_Rx1p,
             pcie_tx_out_tx_dataout_0                => oPCIe_Tx1p,
-            pcie_reconfig_togxb_data                => (others => cInactivated),
-            pcie_reconfig_gxbclk_clk                => cInactivated,
-            pcie_reconfig_fromgxb_0_data            => open,
+            pcie_reconfig_togxb_data                => reconfigToGxb,
+            pcie_reconfig_gxbclk_clk                => clk50,
+            pcie_reconfig_fromgxb_0_data            => reconfigFromGxb,
+            pcie_reconfig_busy_busy_altgxb_reconfig => reconfigBusy,
             pcie_refclk_export                      => iPCIe_RefClk_p,
             pcie_test_in_test_in                    => (others => cInactivated),
             pcie_rstn_export                        => pllLocked,
             pcie_clocks_sim_clk250_export           => open,
             pcie_clocks_sim_clk500_export           => open,
             pcie_clocks_sim_clk125_export           => open,
-            pcie_reconfig_busy_busy_altgxb_reconfig => cInactivated,
             pcie_pipe_ext_pipe_mode                 => cInactivated,
             pcie_pipe_ext_phystatus_ext             => cInactivated,
             pcie_pipe_ext_rate_ext                  => open,
@@ -277,4 +293,12 @@ begin
             locked  => pllLocked
         );
 
+    -- GX reconfig instance
+    gxReconfigInst : gxReconfig
+        port map (
+            reconfig_clk        => clk50,
+            reconfig_fromgxb    => reconfigFromGxb,
+            busy                => reconfigBusy,
+            reconfig_togxb      => reconfigToGxb
+        );
 end rtl;
