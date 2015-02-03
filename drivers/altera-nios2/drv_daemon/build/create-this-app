@@ -62,13 +62,13 @@ done
 if [ -z "${OPLK_BASE_DIR}" ]; then
     # Find oplk root path
     SCRIPTDIR=$(dirname $(readlink -f "${0}"))
-    OPLK_BASE_DIR=$(readlink -f "${SCRIPTDIR}/../../../..")
+    OPLK_BASE_DIR=$(readlink -f "${SCRIPTDIR}/../../../../repository/openPOWERLINK")
 fi
 
 APP_PATH=${OPLK_BASE_DIR}/drivers/altera-nios2/drv_daemon/build
 
 if [ -z "${BOARD_PATH}" ]; then
-    BOARD_PATH=${OPLK_BASE_DIR}/hardware/boards/br-antaresif/mn-single-pcie-drv
+    BOARD_PATH=$(readlink -f "../../../../hardware/boards/br-antaresif/mn-single-pcie-drv")
 fi
 
 chmod +x ${OPLK_BASE_DIR}/tools/altera-nios2/app.sh
