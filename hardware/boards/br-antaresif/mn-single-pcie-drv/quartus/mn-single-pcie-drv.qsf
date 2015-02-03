@@ -1,0 +1,274 @@
+# ------------------------------------------------------------------------------
+#
+#     (c) B&R, 2013
+#
+#     Redistribution and use in source and binary forms, with or without
+#     modification, are permitted provided that the following conditions
+#     are met:
+#
+#     1. Redistributions of source code must retain the above copyright
+#        notice, this list of conditions and the following disclaimer.
+#
+#     2. Redistributions in binary form must reproduce the above copyright
+#        notice, this list of conditions and the following disclaimer in the
+#        documentation and/or other materials provided with the distribution.
+#
+#     3. Neither the name of B&R nor the names of its
+#        contributors may be used to endorse or promote products derived
+#        from this software without prior written permission. For written
+#        permission, please contact office@br-automation.com
+#
+#     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+#     "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+#     LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+#     FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+#     COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+#     INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+#     BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+#     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+#     CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+#     LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+#     ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#     POSSIBILITY OF SUCH DAMAGE.
+#
+# ------------------------------------------------------------------------------
+
+# Project settings
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION    "13.0 SP1"
+set_global_assignment -name PROJECT_CREATION_TIME_DATE  "08:00:00  November 04, 2014"
+set_global_assignment -name LAST_QUARTUS_VERSION        "13.0 SP1"
+
+# Device settings
+set_global_assignment -name FAMILY                      "Cyclone IV GX"
+set_global_assignment -name DEVICE                      "EP4CGX30CF19I7"
+set_global_assignment -name STRATIX_DEVICE_IO_STANDARD  "3.3-V LVTTL"
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP      "-40"
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP      100
+
+# Compilation flow settings
+set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR   1
+set_global_assignment -name OPTIMIZE_HOLD_TIMING            "ALL PATHS"
+set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING    ON
+set_global_assignment -name TIMEQUEST_MULTICORNER_ANALYSIS  ON
+set_global_assignment -name SYNCHRONIZER_IDENTIFICATION     AUTO
+set_global_assignment -name TIMEQUEST_DO_CCPP_REMOVAL       ON
+set_global_assignment -name USE_CONFIGURATION_DEVICE        ON
+set_global_assignment -name SMART_RECOMPILE                 ON
+set_global_assignment -name CRC_ERROR_OPEN_DRAIN            OFF
+set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -rise
+set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -fall
+set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS  "HALF SIGNAL SWING" -rise
+set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS  "HALF SIGNAL SWING" -fall
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE   -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057        -section_id Top
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION   "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
+set_global_assignment -name POWER_BOARD_THERMAL_MODEL       "NONE (CONSERVATIVE)"
+
+# EPCS dedicated path
+set_global_assignment -name CYCLONEII_RESERVE_NCEO_AFTER_CONFIGURATION  "USE AS REGULAR IO"
+set_global_assignment -name RESERVE_DATA0_AFTER_CONFIGURATION           "USE AS REGULAR IO"
+set_global_assignment -name RESERVE_DATA1_AFTER_CONFIGURATION           "USE AS REGULAR IO"
+set_global_assignment -name RESERVE_FLASH_NCE_AFTER_CONFIGURATION       "USE AS REGULAR IO"
+set_global_assignment -name RESERVE_DCLK_AFTER_CONFIGURATION            "USE AS REGULAR IO"
+
+# Get ipcore library
+set_global_assignment -name QIP_FILE            ../../../../ipcore/altera/components/libcommon.qip
+
+# Design settings
+set_global_assignment -name TOP_LEVEL_ENTITY    toplevel
+set_global_assignment -name SDC_FILE            mnSinglePcieDrv.sdc
+set_global_assignment -name VHDL_FILE           toplevel.vhd
+set_global_assignment -name QIP_FILE            ../../common/ipcore/pll.qip
+set_global_assignment -name QIP_FILE            mnSinglePcieDrv/synthesis/mnSinglePcieDrv.qip
+
+# pin assignments
+set_location_assignment PIN_H18 -to iClk
+set_location_assignment PIN_V5 -to inReset
+
+set_location_assignment PIN_C5 -to oFlash_nCS
+set_location_assignment PIN_A4 -to iFlash_DO
+set_location_assignment PIN_B4 -to oFlash_DI
+set_location_assignment PIN_D5 -to oFlash_Clk
+
+set_location_assignment PIN_C15 -to oX2X_TxD
+set_location_assignment PIN_A16 -to iX2X_RxD
+set_location_assignment PIN_B15 -to oX2X_OE
+
+set_location_assignment PIN_D16 -to iSPI_DI
+set_location_assignment PIN_C16 -to oSPI_nCS
+set_location_assignment PIN_C17 -to oSPI_CLK
+set_location_assignment PIN_C18 -to oSPI_DO
+
+set_location_assignment PIN_T2 -to iPCIe_Rx1p
+#set_location_assignment PIN_T1 -to iPCIe_Rx1n
+set_location_assignment PIN_P2 -to oPCIe_Tx1p
+#set_location_assignment PIN_P1 -to oPCIe_Tx1n
+set_location_assignment PIN_G10 -to iPCIe_RefClk_p
+#set_location_assignment PIN_G9 -to iPCIe_RefClk_n
+
+set_location_assignment PIN_P18 -to oPlkRamAddr[0]
+set_location_assignment PIN_N17 -to oPlkRamAddr[1]
+set_location_assignment PIN_M16 -to oPlkRamAddr[2]
+set_location_assignment PIN_R18 -to oPlkRamAddr[3]
+set_location_assignment PIN_N18 -to oPlkRamAddr[4]
+set_location_assignment PIN_T17 -to oPlkRamAddr[5]
+set_location_assignment PIN_M17 -to oPlkRamAddr[6]
+set_location_assignment PIN_U15 -to oPlkRamAddr[7]
+set_location_assignment PIN_T13 -to oPlkRamAddr[8]
+set_location_assignment PIN_V13 -to oPlkRamAddr[9]
+set_location_assignment PIN_U12 -to oPlkRamAddr[10]
+set_location_assignment PIN_R11 -to oPlkRamAddr[11]
+set_location_assignment PIN_U13 -to oPlkRamAddr[12]
+set_location_assignment PIN_R12 -to oPlkRamAddr[13]
+set_location_assignment PIN_V14 -to oPlkRamAddr[14]
+set_location_assignment PIN_T12 -to oPlkRamAddr[15]
+set_location_assignment PIN_T14 -to oPlkRamAddr[16]
+set_location_assignment PIN_N16 -to oPlkRamAddr[17]
+set_location_assignment PIN_V15 -to oPlkRamAddr[18]
+
+set_location_assignment PIN_M18 -to bPlkRamData[0]
+set_location_assignment PIN_L18 -to bPlkRamData[1]
+set_location_assignment PIN_K15 -to bPlkRamData[2]
+set_location_assignment PIN_K16 -to bPlkRamData[3]
+set_location_assignment PIN_P16 -to bPlkRamData[4]
+set_location_assignment PIN_P15 -to bPlkRamData[5]
+set_location_assignment PIN_N15 -to bPlkRamData[6]
+set_location_assignment PIN_R14 -to bPlkRamData[7]
+set_location_assignment PIN_T16 -to bPlkRamData[8]
+set_location_assignment PIN_V18 -to bPlkRamData[9]
+set_location_assignment PIN_U18 -to bPlkRamData[10]
+set_location_assignment PIN_V17 -to bPlkRamData[11]
+set_location_assignment PIN_R15 -to bPlkRamData[12]
+set_location_assignment PIN_V16 -to bPlkRamData[13]
+set_location_assignment PIN_U16 -to bPlkRamData[14]
+set_location_assignment PIN_T15 -to bPlkRamData[15]
+
+set_location_assignment PIN_R17 -to onPlkRamOE
+set_location_assignment PIN_T18 -to onPlkRamBE[0]
+set_location_assignment PIN_R16 -to onPlkRamBE[1]
+set_location_assignment PIN_R13 -to onPlkRamWE
+
+set_location_assignment PIN_A10 -to oMDCPlkPhy[0]
+set_location_assignment PIN_A11 -to bMDIOPlkPhy[0]
+
+set_location_assignment PIN_A5 -to oRmiiRefClk
+set_location_assignment PIN_B6 -to iRmiiRxErr[0]
+set_location_assignment PIN_A7 -to oRmiiTxData[0]
+set_location_assignment PIN_A8 -to oRmiiTxData[1]
+set_location_assignment PIN_B7 -to oRmiiTxEn[0]
+set_location_assignment PIN_A6 -to iRmiiRxData[0]
+set_location_assignment PIN_C7 -to iRmiiRxData[1]
+set_location_assignment PIN_C6 -to iRmiiCrsDv[0]
+set_location_assignment PIN_B10 -to onPlkPhyRst[0]
+set_location_assignment PIN_C10 -to iLinkPlkPhy
+
+set_location_assignment PIN_A9 -to onPlkLinkLed
+set_location_assignment PIN_B9 -to onPlkActLed
+set_location_assignment PIN_A17 -to onPlkStatLedRot
+set_location_assignment PIN_A18 -to onPlkStatLedGruen
+set_location_assignment PIN_B18 -to onPlkActLedGelb
+set_location_assignment PIN_E18 -to onReserveLed
+
+set_location_assignment PIN_U6 -to oDbgTxD
+set_location_assignment PIN_V6 -to iDbgRxD
+set_location_assignment PIN_U7 -to oDbgRTS
+set_location_assignment PIN_V7 -to iDbgCTS
+
+set_location_assignment PIN_A15 -to iIF1RxD
+set_location_assignment PIN_A14 -to oIF1TxD
+set_location_assignment PIN_A13 -to iIF2RxD
+set_location_assignment PIN_B13 -to oIF2TxD
+set_location_assignment PIN_C13 -to oIF2OE
+set_location_assignment PIN_V9 -to oIF1RxDLed
+set_location_assignment PIN_U9 -to oIF1TxDLed
+set_location_assignment PIN_U10 -to oIF2RxDLed
+set_location_assignment PIN_V10 -to oIF2TxDLed
+
+set_location_assignment PIN_D18 -to inConfigIF1CAN
+set_location_assignment PIN_D17 -to inConfigIF2CAN
+set_location_assignment PIN_F17 -to inConfigIF2RS485
+set_location_assignment PIN_E16 -to inConfigIF2RS232
+set_location_assignment PIN_G17 -to inConfigX2X
+set_location_assignment PIN_E15 -to inConfigPLK
+set_location_assignment PIN_C9 -to inLegacyRS232
+set_location_assignment PIN_C14 -to inConfigFPGAType
+set_location_assignment PIN_D9 -to inConfigUndef1
+set_location_assignment PIN_C11 -to inConfigUndef2
+set_location_assignment PIN_D15 -to inHWK0
+set_location_assignment PIN_D14 -to inHWK1
+
+set_location_assignment PIN_B16 -to oDCDCEn
+set_location_assignment PIN_T6 -to onClkReq
+
+set_location_assignment PIN_P6 -to nConfig_PG_CRC
+
+# Instance assignments
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to inReset
+set_instance_assignment -name IO_STANDARD "1.5-V PCML" -to oPCIe_Tx1p
+set_instance_assignment -name IO_STANDARD "1.5-V PCML" -to oPCIe_Tx1n
+set_instance_assignment -name IO_STANDARD "2.5-V PCML" -to iPCIe_Rx1p
+set_instance_assignment -name INPUT_TERMINATION "OCT 100 OHMS" -to iPCIe_Rx1p
+set_instance_assignment -name IO_STANDARD "1.5-V PCML" -to iPCIe_Rx1n
+set_instance_assignment -name IO_STANDARD HCSL -to iPCIe_RefClk_p
+#set_instance_assignment -name IO_STANDARD HCSL -to iPCIe_RefClk_n
+
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to oRmiiTxData
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to oRmiiTxEn
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to iRmiiRxData
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to iRmiiCrsDv
+
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to onPlkRamOE
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to onPlkRamWE
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to onPlkRamOE
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to onPlkRamWE
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to onPlkRamBE
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to oPlkRamAddr
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to bPlkRamData
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to bPlkRamData
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to onPlkRamOE
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to onPlkRamWE
+
+set_instance_assignment -name IO_STANDARD "2.5 V" -to onPlkRamOE
+set_instance_assignment -name IO_STANDARD "2.5 V" -to onPlkRamWE
+set_instance_assignment -name IO_STANDARD "2.5 V" -to onPlkRamBE[0]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to onPlkRamBE[1]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to oPlkRamAddr[18]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to oPlkRamAddr[17]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to oPlkRamAddr[16]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to oPlkRamAddr[15]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to oPlkRamAddr[14]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to oPlkRamAddr[13]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to oPlkRamAddr[12]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to oPlkRamAddr[11]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to oPlkRamAddr[10]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to oPlkRamAddr[9]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to oPlkRamAddr[8]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to oPlkRamAddr[7]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to oPlkRamAddr[6]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to oPlkRamAddr[5]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to oPlkRamAddr[4]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to oPlkRamAddr[3]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to oPlkRamAddr[2]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to oPlkRamAddr[1]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to oPlkRamAddr[0]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to bPlkRamData[15]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to bPlkRamData[14]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to bPlkRamData[13]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to bPlkRamData[12]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to bPlkRamData[11]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to bPlkRamData[10]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to bPlkRamData[9]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to bPlkRamData[8]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to bPlkRamData[7]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to bPlkRamData[6]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to bPlkRamData[5]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to bPlkRamData[4]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to bPlkRamData[3]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to bPlkRamData[2]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to bPlkRamData[1]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to bPlkRamData[0]
+
+# Other assignments
+
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
