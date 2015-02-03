@@ -177,7 +177,9 @@ architecture rtl of toplevel is
             pcie_powerdown_pll_powerdown                : in    std_logic;
             pcie_powerdown_gxb_powerdown                : in    std_logic;
             pcie_test_out_test_out                      : out   std_logic_vector(8 downto 0);
-            host_benchmark_pio_export                   : out   std_logic_vector(7 downto 0)
+            host_benchmark_pio_export                   : out   std_logic_vector(7 downto 0);
+            pcp_0_cpu_resetrequest_resetrequest         : in    std_logic;
+            pcp_0_cpu_resetrequest_resettaken           : out   std_logic
         );
     end component mnSinglePcieDrv;
 
@@ -225,6 +227,9 @@ begin
             clk100_clk                              => clk100,
             clk125_clk                              => clk125,
             reset_reset_n                           => pllLocked,
+
+            pcp_0_cpu_resetrequest_resetrequest     => '0',
+            pcp_0_cpu_resetrequest_resettaken       => open,
 
             tri_state_0_tcm_address_out             => oPlkRamAddr,
             tri_state_0_tcm_read_n_out              => onPlkRamOE,

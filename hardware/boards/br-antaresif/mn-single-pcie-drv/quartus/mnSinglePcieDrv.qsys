@@ -198,19 +198,19 @@
          type = "boolean";
       }
    }
-   element onchip_memory2_0.s1
-   {
-      datum baseAddress
-      {
-         value = "49152";
-         type = "String";
-      }
-   }
    element host_benchmark.s1
    {
       datum baseAddress
       {
          value = "4096";
+         type = "String";
+      }
+   }
+   element onchip_memory2_0.s1
+   {
+      datum baseAddress
+      {
+         value = "49152";
          type = "String";
       }
    }
@@ -289,7 +289,7 @@
  <parameter name="projectName">mn-single-pcie-drv.qpf</parameter>
  <parameter name="sopcBorderPoints" value="false" />
  <parameter name="systemHash" value="1" />
- <parameter name="timeStamp" value="1422553430825" />
+ <parameter name="timeStamp" value="1418919714294" />
  <parameter name="useTestBenchNamingPattern" value="false" />
  <instanceScript></instanceScript>
  <interface name="clk50" internal="clk50.clk_in" type="clock" dir="end" />
@@ -400,6 +400,11 @@
  <interface
    name="host_benchmark_pio"
    internal="host_benchmark.external_connection"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="pcp_0_cpu_resetrequest"
+   internal="pcp_0.cpu_resetrequest"
    type="conduit"
    dir="end" />
  <interface
