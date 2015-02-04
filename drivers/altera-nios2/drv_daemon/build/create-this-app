@@ -59,17 +59,13 @@ do
     shift
 done
 
-if [ -z "${OPLK_BASE_DIR}" ]; then
-    # Find oplk root path
-    SCRIPTDIR=$(dirname $(readlink -f "${0}"))
-    OPLK_BASE_DIR=$(readlink -f "${SCRIPTDIR}/../../../../oplk")
-fi
+# Find oplk root path
+SCRIPTDIR=$(dirname $(readlink -f "${0}"))
+export APC_BASE_DIR=$(readlink -f "${SCRIPTDIR}/../../../..")
+export OPLK_BASE_DIR=${APC_BASE_DIR}/oplk
 
-APP_PATH=${OPLK_BASE_DIR}/drivers/altera-nios2/drv_daemon/build
-
-if [ -z "${BOARD_PATH}" ]; then
-    BOARD_PATH=$(readlink -f "../../../../hardware/boards/br-antaresif/mn-single-pcie-drv")
-fi
+APP_PATH=${APC_BASE_DIR}/drivers/altera-nios2/drv_daemon/build
+BOARD_PATH=${APC_BASE_DIR}/hardware/boards/br-antaresif/mn-single-pcie-drv
 
 chmod +x ${OPLK_BASE_DIR}/tools/altera-nios2/app.sh
 ${OPLK_BASE_DIR}/tools/altera-nios2/app.sh ${APP_PATH} ${BOARD_PATH} ${ARGS}
