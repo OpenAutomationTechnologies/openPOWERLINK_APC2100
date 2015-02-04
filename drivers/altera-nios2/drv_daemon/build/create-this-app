@@ -62,7 +62,7 @@ done
 if [ -z "${OPLK_BASE_DIR}" ]; then
     # Find oplk root path
     SCRIPTDIR=$(dirname $(readlink -f "${0}"))
-    OPLK_BASE_DIR=$(readlink -f "${SCRIPTDIR}/../../../../repository/openPOWERLINK")
+    OPLK_BASE_DIR=$(readlink -f "${SCRIPTDIR}/../../../../oplk")
 fi
 
 APP_PATH=${OPLK_BASE_DIR}/drivers/altera-nios2/drv_daemon/build

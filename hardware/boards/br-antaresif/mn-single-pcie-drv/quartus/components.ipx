@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <library>
-    <path path="../../../../../repository/openPOWERLINK/hardware/ipcore/altera/components.ipx" />
-    <path path="../../../../../repository/openPOWERLINK/hardware/ipcore/altera/qsys/mn_pcp.qsys"/>
+    <path path="../../../../../oplk/hardware/ipcore/altera/components.ipx" />
+    <path path="../../../../../oplk/hardware/ipcore/altera/qsys/mn_pcp.qsys"/>
 </library>
