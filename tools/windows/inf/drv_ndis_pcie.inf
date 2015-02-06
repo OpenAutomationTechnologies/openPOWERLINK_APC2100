@@ -1,0 +1,89 @@
+;
+; drv_ndis_pcie.inf
+;
+
+[Version]
+Signature   = "$WINDOWS NT$"
+Class       = Net
+ClassGuid   = {4d36e972-e325-11ce-bfc1-08002be10318}
+Provider    = %ManufacturerName%
+DriverVer=02/06/2015,2.1.0
+CatalogFile=drv_ndis_pcie.cat
+
+[Manufacturer]
+%ManufacturerName%  =OPLK, NTamd64
+
+[ControlFlags]
+ExcludeFromSelect = *
+
+[OPLK.NTamd64]
+; DisplayName                 Section             DeviceID
+; -----------                 -------             --------
+%OPLK.DevDesc%              = OPLK.xil_pcie,      PCI\VEN_1677&DEV_E53f     ; B&R Antares Interface Card
+
+[OPLK.xil_pcie]
+Characteristics = 0x84 ; NCF_HAS_UI | NCF_PHYSICAL
+BusType         = 5    ; PCI
+AddReg          = oplk.reg
+CopyFiles       = oplk.CopyFiles
+*IfType         = 6     ; IF_TYPE_ETHERNET_CSMACD
+*MediaType      = 0     ; NdisMedium802_3
+*PhysicalMediaType = 14 ; NdisPhysicalMedium802_3
+
+[OPLK.xil_pcie.Services]
+AddService = oplkMiniport, 2, oplk.Service, oplk.EventLog
+
+[OPLK.xil_pcie.HW]
+Needs = PciIoSpaceNotRequired
+AddReg = MSI.reg
+
+[oplk.reg]
+HKR, Ndi,                                       Service,                0, "oplkMiniport"
+HKR, Ndi\Interfaces,                            UpperRange,             0, "ndis5"
+HKR, Ndi\Interfaces,                            LowerRange,             0, "ethernet"
+
+[MSI.reg]
+HKR, "Interrupt Management", 0x00000010
+HKR, "Interrupt Management\MessageSignaledInterruptProperties", 0x00000010
+HKR, "Interrupt Management\MessageSignaledInterruptProperties", MSISupported, 0x00010001, 1
+HKR, "Interrupt Management\MessageSignaledInterruptProperties", MessageNumberLimit, 0x00010001, 1
+
+[oplk.CopyFiles]
+drv_ndis_pcie.sys,,,2
+
+[SourceDisksNames]
+1 = %DiskName%,drv_ndis_pcie.sys,,""
+
+[SourceDisksFiles]
+drv_ndis_pcie.sys = 1,, ; on distribution disk 1
+
+[oplk.Service]
+DisplayName     = %OPLK.Service.DispName%
+ServiceType     = 1 ;%SERVICE_KERNEL_DRIVER%
+StartType       = 3 ;%SERVICE_DEMAND_START%
+ErrorControl    = 1 ;%SERVICE_ERROR_NORMAL%
+ServiceBinary   = %12%\drv_ndis_pcie.sys
+LoadOrderGroup  = NDIS
+
+[oplk.EventLog]
+AddReg = oplk.AddEventLog.reg
+
+[oplk.AddEventLog.reg]
+HKR, , EventMessageFile, 0x00020000, %EventLogMessage%
+HKR, , TypesSupported,   0x00010001, 7
+
+;-----------------------------------------------------------------------------
+; DestinationDirs
+;
+[DestinationDirs]
+DefaultDestDir                = 11
+oplk.CopyFiles                = 12
+
+
+[Strings]
+ManufacturerName="Kalycito Infotech Private Limited"
+ClassName=""
+DiskName="openPOWERLINK PCIe Solution Source Disk"
+OPLK.DevDesc = "openPOWERLINK PCIe Solution"
+OPLK.Service.DispName = "openPOWERLINK miniport Service"
+EventLogMessage  = "%SystemRoot%\System32\netevent.dll;%SystemRoot%\System32\drivers\drv_ndis_pcie.sys"
