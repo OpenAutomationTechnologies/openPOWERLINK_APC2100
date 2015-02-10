@@ -41,10 +41,7 @@ SET(DEMO_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
 SET(COMMON_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../common/src)
 SET(OPENCONFIG_PROJ_DIR ${CMAKE_SOURCE_DIR}/../common/openCONFIGURATOR_projects)
 SET(CONTRIB_SOURCE_DIR ${APC_ROOT_DIR}/contrib)
-SET(ARCH_SOURCE_DIR ${OPLK_ROOT_DIR}/stack/src/arch)
 SET(OPLK_INCLUDE_DIR ${OPLK_ROOT_DIR}/stack/include)
-SET(TOOLS_DIR ${OPLK_ROOT_DIR}/tools)
-SET(BOARDS_DIR ${OPLK_ROOT_DIR}/hardware/boards)
 
 ################################################################################
 # Include CMake Modules

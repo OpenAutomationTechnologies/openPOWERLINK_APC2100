@@ -53,10 +53,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <getopt/getopt.h>
 #include <console/console.h>
 
-#if defined(CONFIG_USE_PCAP)
-#include <pcap/pcap-console.h>
-#endif
-
 #include "app.h"
 #include "event.h"
 
@@ -195,10 +191,6 @@ static tOplkError initPowerlink(UINT32 cycleLen_p, char* pszCdcFileName_p,
     static char                 devName[128];
 
     printf("Initializing openPOWERLINK stack...\n");
-
-#if defined(CONFIG_USE_PCAP)
-    selectPcapDevice(devName);
-#endif
 
     memset(&initParam, 0, sizeof(initParam));
     initParam.sizeOfInitParam = sizeof(initParam);

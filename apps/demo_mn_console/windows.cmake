@@ -42,19 +42,8 @@ SET (DEMO_ARCH_SOURCES
      ${CONTRIB_SOURCE_DIR}/console/console-windows.c
      )
 
-INCLUDE_DIRECTORIES(${CONTRIB_SOURCE_DIR}/pcap/windows/WpdPack/Include
-                    ${ARCH_SOURCE_DIR}/windows)
-
 ################################################################################
 # Set architecture specific libraries
-
-IF(CMAKE_CL_64)
-    LINK_DIRECTORIES(${CONTRIB_SOURCE_DIR}/pcap/windows/WpdPack/Lib/x64)
-ELSE ()
-    LINK_DIRECTORIES(${CONTRIB_SOURCE_DIR}/pcap/windows/WpdPack/Lib)
-ENDIF()
-
-SET(ARCH_LIBRARIES wpcap iphlpapi)
 
 ################################################################################
 # Set architecture specific installation files
