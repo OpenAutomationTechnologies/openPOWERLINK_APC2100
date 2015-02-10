@@ -90,7 +90,7 @@ tSyncThreadInstance syncThreadInstance_l;
 //------------------------------------------------------------------------------
 // local function prototypes
 //------------------------------------------------------------------------------
-static UINT32 syncThread(void* arg_p);
+static DWORD WINAPI syncThread(LPVOID arg_p);
 
 //============================================================================//
 //            P U B L I C   F U N C T I O N S                                 //
@@ -184,12 +184,12 @@ void system_startSyncThread(tSyncCb pfnSync_p)
     // Currently threads are not used on Windows
     syncThreadInstance_l.fnSyncCb = pfnSync_p;
 
-    syncThreadInstance_l.syncThreadHandle = CreateThread(NULL,                  // Default security attributes
-                                      0,                     // Use Default stack size
-                                      syncThread,           // Thread routine
-                                      NULL,                  // Argum to the thread routine
-                                      0,                     // Use default creation flags
-                                      NULL   // Returened thread Id
+    syncThreadInstance_l.syncThreadHandle = CreateThread(NULL,  // Default security attributes
+                                      0,                        // Use Default stack size
+                                      syncThread,               // Thread routine
+                                      NULL,                     // Argum to the thread routine
+                                      0,                        // Use default creation flags
+                                      NULL                      // Returned thread Id
                                       );
 }
 
@@ -215,7 +215,18 @@ void system_stopSyncThread(void)
 //============================================================================//
 /// \name Private Functions
 /// \{
-static UINT32 syncThread(void* arg_p)
+//------------------------------------------------------------------------------
+/**
+\brief  Synchronous application thread
+
+This function implements the synchronous application thread.
+
+\param  arg_p    Thread parameter. Not used!
+
+\return The function returns the thread exit code.
+*/
+//------------------------------------------------------------------------------
+static DWORD WINAPI syncThread(LPVOID arg_p)
 {
     tOplkError ret;
 
@@ -239,4 +250,3 @@ static UINT32 syncThread(void* arg_p)
     return 0;
 }
 ///\}
-
