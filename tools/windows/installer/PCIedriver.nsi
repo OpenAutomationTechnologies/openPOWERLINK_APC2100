@@ -61,7 +61,7 @@
   !insertmacro MUI_LANGUAGE "English"
 
 ;Installation Section for Demo_applications
-Section "Demo" section1
+Section "PCIe Driver" section1
 
 ;Create directories in program files.
     WriteRegStr HKCU "Software\Anatares PCIe Driver" "" "$INSTDIR"
