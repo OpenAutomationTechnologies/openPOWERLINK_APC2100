@@ -76,6 +76,17 @@ do
     cp -r --parents $i ${RELEASE_DIR}
 done
 
+
+# Create driver installer and copy into release package
+
+INSTALLER_SCRIPT=PCIedriver.nsi
+INSTALLER_NAME=PCIe_setup.exe
+INSTALLER_DIR=tools/windows/installer/
+
+makensis ${INSTALLER_DIR}/${INSTALLER_SCRIPT}
+
+cp ${INSTALLER_DIR}/${INSTALLER_NAME} ${RELEASE_DIR}/${INSTALLER_DIR}
+
 # Now create tar
 tar -cf ${RELEASE_DIR}_${RELEASE_VERSION}.tar ${RELEASE_DIR}
 if [ $? -ne 0 ]; then
