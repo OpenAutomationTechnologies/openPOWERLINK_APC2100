@@ -191,7 +191,6 @@ architecture rtl of toplevel is
             c1      : out std_logic;
             c2      : out std_logic;
             c3      : out std_logic;
-            c4      : out std_logic;
             locked  : out std_logic
         );
     end component;
@@ -296,7 +295,6 @@ begin
             c1      => clk100,
             c2      => clk25,
             c3      => clk125,
-            c4      => open,
             locked  => pllLocked
         );
 
