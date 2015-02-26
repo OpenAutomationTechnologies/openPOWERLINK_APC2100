@@ -13,18 +13,18 @@
 ;General
 
   ;Name and file
-   Name    "B&R Antares PCIe driver"
+   Name    "openPOWERLINK PCIe driver"
    OutFile "PCIe_setup.exe"
    VIProductVersion 1.0.0.0
-   VIAddVersionKey ProductName "B&R Antares PCIe driver"
+   VIAddVersionKey ProductName "openPOWERLINK PCIe driver"
    VIAddVersionKey CompanyName "Bernecker + Rainer Industrie-Elektronik Ges.m.b.H"
    VIAddVersionKey ProductVersion 2.1.0.0
-   VIAddVersionKey FileDescription "B&R Antares PCIe driver installer"
+   VIAddVersionKey FileDescription "openPOWERLINK PCIe interface driver installer"
   ;Default installation folder
-   InstallDir "$PROGRAMFILES\Anatares PCIe Driver"
+   InstallDir "$PROGRAMFILES\openPOWERLINK PCIe Driver"
 
   ;Get installation folder from registry if available
-   InstallDirRegKey HKCU "Software\AntaresPCIe" ""
+   InstallDirRegKey HKCU "Software\oplkPCIe" ""
 
   ;Request application privileges for Windows 7 & WinXP
    RequestExecutionLevel admin
@@ -52,7 +52,7 @@
 
      ;Start Menu Folder Page Configuration
   !define MUI_STARTMENUPAGE_REGISTRY_ROOT "HKCU"
-  !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\Anatares PCIe Driver"
+  !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\openPOWERLINK PCIe Driver"
   !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
 
 ;--------------------------------
@@ -64,17 +64,16 @@
 Section "PCIe Driver" section1
 
 ;Create directories in program files.
-    WriteRegStr HKCU "Software\Anatares PCIe Driver" "" "$INSTDIR"
+    WriteRegStr HKCU "Software\openPOWERLINK PCIe Driver" "" "$INSTDIR"
     SetOutPath "$INSTDIR\Driver"
-    File  /r "..\..\..\oplk\bin\windows\amd64\drv_ndis_pcie Package\*.*"
+    File  /r "..\..\..\bin\windows\amd64\drv_ndis_pcie Package\*.*"
     File  /r "..\..\..\oplk\bin\windows\amd64\installer-pcie\*.*"
     File  /r "..\..\..\oplk\bin\windows\amd64\uninstaller-pcie\*.*"
-    File "..\inf\drv_ndis_pcie.inf"
     SetOutPath "$INSTDIR\Temp"
     File /r "vcredist_x64.exe"
 
 ;Create shortcuts
-ExecWait "$INSTDIR\Temp\vcredist_x64.exe"
+ExecWait "$INSTDIR\Temp\vcredist_x64.exe /passive /norestart"
 SetOutPath "$INSTDIR\Driver"
 ExecWait "$INSTDIR\Driver\installer-pcie.exe"
 WriteUninstaller $INSTDIR\uninstaller.exe
@@ -89,12 +88,12 @@ Section "Uninstall"
 SetOutPath "$INSTDIR\Driver"
 ExecWait "$INSTDIR\Driver\uninstaller-pcie.exe"
   ; Remove registry keys
-   DeleteRegKey HKLM "SOFTWARE\Anatares PCIe Driver"
+   DeleteRegKey HKLM "SOFTWARE\openPOWERLINK PCIe Driver"
   ; Remove files and uninstaller
    Delete $INSTDIR\uninstall.exe
    Delete "$INSTDIR\*.*"
    RMDir /r "$INSTDIR\*.*"
-   RMDir /r "$PROGRAMFILES\Anatares PCIe Driver\*.*"
+   RMDir /r "$PROGRAMFILES\openPOWERLINK PCIe Driver\*.*"
   ; Remove shortcuts, if any
    Delete "$SMPROGRAMS\$StartMenuFolder\uninstaller.lnk"
    RMDir /r "$SMPROGRAMS\$StartMenuFolder\"
