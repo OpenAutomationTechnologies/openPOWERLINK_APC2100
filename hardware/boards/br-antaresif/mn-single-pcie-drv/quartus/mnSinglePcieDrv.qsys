@@ -289,7 +289,7 @@
  <parameter name="projectName">mn-single-pcie-drv.qpf</parameter>
  <parameter name="sopcBorderPoints" value="false" />
  <parameter name="systemHash" value="1" />
- <parameter name="timeStamp" value="1418919714294" />
+ <parameter name="timeStamp" value="1425551172600" />
  <parameter name="useTestBenchNamingPattern" value="false" />
  <instanceScript></instanceScript>
  <interface name="clk50" internal="clk50.clk_in" type="clock" dir="end" />
@@ -589,8 +589,8 @@
   <parameter name="CB_P2A_FIXED_AVALON_ADDR_B5" value="0" />
   <parameter name="BAR Type">32 bit Non-Prefetchable,32 bit Non-Prefetchable,Not used,Not used,Not used,Not used</parameter>
   <parameter name="vendor_id" value="5751" />
-  <parameter name="device_id" value="58687" />
-  <parameter name="revision_id" value="5" />
+  <parameter name="device_id" value="59401" />
+  <parameter name="revision_id" value="1" />
   <parameter name="class_code" value="557104" />
   <parameter name="subsystem_vendor_id" value="5751" />
   <parameter name="subsystem_device_id" value="58658" />
