@@ -50,6 +50,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <oplk/debugstr.h>
 #include <kernel/ctrlk.h>
 
+#include <flash.h>
+#include <firmware.h>
+
 //============================================================================//
 //            G L O B A L   D E F I N I T I O N S                             //
 //============================================================================//
@@ -77,10 +80,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //------------------------------------------------------------------------------
 // local types
 //------------------------------------------------------------------------------
+typedef struct
+{
+    tFlashInfo          flashInfo;          ///< Flash info
+    UINT32              writeOffset;        ///< Current flash write offset
+    UINT32              writeEraseOffset;   ///< Current flash erase offset
+    tFirmwareImageType  nextImage;          ///< Next firmware image to be configured
+
+} tDrvInstance;
 
 //------------------------------------------------------------------------------
 // local vars
 //------------------------------------------------------------------------------
+static tDrvInstance drvInstance_l;
 
 //------------------------------------------------------------------------------
 // local function prototypes
@@ -88,6 +100,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 static tOplkError initPlk(void);
 static void shtdPlk(void);
 static void bgtPlk(void);
+static BOOL ctrlCommandExecCb(tCtrlCmdType cmd_p, UINT16* pRet_p, UINT16* pStatus_p,
+                              BOOL* pfExit_p);
+static tOplkError writeUpdateImage(tCtrlDataChunk* pDataChunk_p);
+static tOplkError setNextReconfigFirmware(tFirmwareImageType imageType_p);
 
 //============================================================================//
 //            P U B L I C   F U N C T I O N S                                 //
@@ -120,6 +136,22 @@ int main(void)
     {
         PRINTF("\n");
 
+        memset((void*)&drvInstance_l, 0, sizeof(tDrvInstance));
+
+        if (flash_init() != 0)
+        {
+            PRINTF("Flash initialize failed!\n");
+            break;
+        }
+
+        if (firmware_init() != 0)
+        {
+            PRINTF("Firmware initialize failed!\n");
+            break;
+        }
+
+        flash_getInfo(&drvInstance_l.flashInfo);
+
         ret = initPlk();
 
         PRINTF("Initialization returned with \"%s\" (0x%X)\n",
@@ -133,6 +165,15 @@ int main(void)
         PRINTF("Background loop stopped.\nShutdown Kernel Stack\n");
 
         shtdPlk();
+
+        if (drvInstance_l.nextImage != kFirmwareImageUnknown)
+        {
+            usleep(2000000U); //jz: Wait here for some longer time!
+            firmware_reconfig(drvInstance_l.nextImage);
+        }
+
+        firmware_exit();
+        flash_exit();
 
         usleep(1000000U);
     }
@@ -159,7 +200,7 @@ static tOplkError initPlk(void)
 {
     tOplkError ret;
 
-    ret = ctrlk_init();
+    ret = ctrlk_init(ctrlCommandExecCb);
 
     if (ret != kErrorOk)
     {
@@ -197,6 +238,7 @@ static void bgtPlk(void)
 
     while (1)
     {
+        firmware_process();
         ctrlk_updateHeartbeat();
         fExit = ctrlk_process();
 
@@ -205,3 +247,251 @@ static void bgtPlk(void)
     }
 }
 
+//------------------------------------------------------------------------------
+/**
+\brief    Ctrl command execution callback
+
+This function is called by the ctrlk module before executing the given command.
+It only implements the supported commands.
+
+\param  cmd_p               The command to be executed.
+\param  pRet_p              Pointer to store the return value.
+\param  pStatus_p           Pointer to store the kernel stack status. (if not NULL)
+\param  pfExit_p            Pointer to store the exit flag. (if not NULL)
+
+\return The function returns a BOOL.
+\retval TRUE                Execution completed in callback.
+\retval FALSE               Execution needed in ctrlk module.
+*/
+//------------------------------------------------------------------------------
+static BOOL ctrlCommandExecCb(tCtrlCmdType cmd_p, UINT16* pRet_p, UINT16* pStatus_p,
+                              BOOL* pfExit_p)
+{
+    tOplkError      retVal = kErrorOk;
+    UINT16          status;
+    BOOL            fExit;
+    tCtrlDataChunk  dataChunk;
+
+    switch (cmd_p)
+    {
+        case kCtrlWriteFile:
+            retVal = ctrlk_getFileTransferChunk(&dataChunk);
+            if (retVal != kErrorOk)
+            {
+                *pRet_p = (UINT16)retVal;
+                fExit = TRUE;
+                break;
+            }
+
+            if (dataChunk.fileType == kCtrlFileTypeFirmwareUpdate)
+                retVal = writeUpdateImage(&dataChunk);
+            else
+                retVal = kErrorGeneralError;
+
+            *pRet_p = (UINT16)retVal;
+            fExit = FALSE;
+            break;
+
+        case kCtrlSetKernelFactoryImage:
+            retVal = setNextReconfigFirmware(kFirmwareImageFactory);
+            *pRet_p = (UINT16)retVal;
+            fExit = FALSE;
+            break;
+
+        case kCtrlSetKernelUpdateImage:
+            retVal = setNextReconfigFirmware(kFirmwareImageUpdate);
+            *pRet_p = (UINT16)retVal;
+            fExit = FALSE;
+            break;
+
+        default:
+            return FALSE; // Command execution not implemented
+    }
+
+    if (pStatus_p != NULL)
+        *pStatus_p = status;
+
+    if (pfExit_p != NULL)
+        *pfExit_p = fExit;
+
+    return TRUE;
+}
+
+//------------------------------------------------------------------------------
+/**
+\brief    Write update image chunk to flash
+
+This function writes the update image data chunk to the flash. The provided
+data chunk has to be read from the ctrl module's transfer buffer.
+
+\param  pDataChunk_p        Data chunk information
+
+\return This function returns tOplkError error codes.
+*/
+//------------------------------------------------------------------------------
+static tOplkError writeUpdateImage(tCtrlDataChunk* pDataChunk_p)
+{
+    tOplkError          ret;
+    int                 retFlash;
+    tFlashInfo*         pFlashInfo = &drvInstance_l.flashInfo;
+    UINT32              updateImageOffset = firmware_getImageBase(kFirmwareImageUpdate);
+    UINT32              writeOffset;
+    UINT8               aBuffer[CTRL_FILETRANSFER_SIZE];
+
+    if (pDataChunk_p->length > sizeof(aBuffer))
+        return kErrorNoResource;
+
+    ret = ctrlk_readFileTransfer(sizeof(aBuffer), aBuffer);
+    if (ret != kErrorOk)
+        return ret;
+
+    // Check start condition
+    if (pDataChunk_p->fStart && (pDataChunk_p->offset != 0))
+        return kErrorInvalidOperation;
+
+    // Get offset within flash
+    writeOffset = updateImageOffset + pDataChunk_p->offset;
+
+    // Check if continuous write is done
+    if (!pDataChunk_p->fStart && (writeOffset != drvInstance_l.writeOffset))
+        return kErrorInvalidOperation; // Command skips some data, shouldn't be!
+
+    // Check if write exceeds flash size
+    if ((writeOffset + pDataChunk_p->length) > pFlashInfo->size)
+        return kErrorGeneralError; // Image exceeds flash size!
+
+    // Handle start
+    if (pDataChunk_p->fStart)
+    {
+        // Reset write pointer
+        drvInstance_l.writeOffset = writeOffset;
+
+        // Erase first sector
+        retFlash = flash_eraseSector(updateImageOffset);
+        if (retFlash != 0)
+            return kErrorGeneralError;
+
+        // Set next sector to be erased
+        drvInstance_l.writeEraseOffset = updateImageOffset + pFlashInfo->sectorSize;
+    }
+
+    // Handle sector boundary crossing
+    if ((writeOffset + pDataChunk_p->length) > drvInstance_l.writeEraseOffset)
+    {
+        // Chunk exceeds current sector => erase next sector
+        if (flash_eraseSector(drvInstance_l.writeEraseOffset) != 0)
+            return kErrorGeneralError;
+
+        drvInstance_l.writeEraseOffset += pFlashInfo->sectorSize;
+    }
+
+    // Forward data to flash
+    retFlash = flash_write(drvInstance_l.writeOffset, aBuffer, pDataChunk_p->length);
+    if (retFlash != 0)
+        return kErrorGeneralError;
+
+    // At this point data is forwarded to the flash
+    drvInstance_l.writeOffset += pDataChunk_p->length;
+
+    return kErrorOk;
+}
+
+//------------------------------------------------------------------------------
+/**
+\brief    Set next reconfigure firmware type
+
+This function sets the reconfiguration to a valid firmware image.
+
+\note   Note that the reconfiguration itself may only be triggered after the
+        stack has been shutdown.
+
+\param  imageType_p         Firmware image type to be reconfigured
+
+\return This function returns tOplkError error codes.
+*/
+//------------------------------------------------------------------------------
+static tOplkError setNextReconfigFirmware(tFirmwareImageType imageType_p)
+{
+    tFirmwareHeader fwHdr;
+
+    switch (imageType_p)
+    {
+        case kFirmwareImageFactory:
+            drvInstance_l.nextImage = imageType_p;
+            return kErrorOk;
+
+        case kFirmwareImageUpdate:
+            // Update image must be verified before doing reconfiguration!
+            break;
+
+        default:
+            return kErrorInvalidOperation;
+    }
+
+    if (flash_read(firmware_getImageBase(kFirmwareImageUpdate), (UINT8*)&fwHdr,
+        sizeof(tFirmwareHeader)) != 0)
+    {
+        return kErrorNoResource;
+    }
+
+    printf("Firmware header:\n");
+    printf(" Signature      0x%08X\n", fwHdr.signature);
+    printf(" Version        0x%08X\n", fwHdr.version);
+    printf(" Time stamp     0x%08X\n", fwHdr.timeStamp);
+    printf(" Length         0x%08X\n", fwHdr.length);
+    printf(" CRC            0x%08X\n", fwHdr.crc);
+    printf(" OPLK Version   0x%08X\n", fwHdr.oplkVersion);
+    printf(" OPLK Feature   0x%08X\n", fwHdr.oplkFeature);
+    printf(" Header CRC     0x%08X\n", fwHdr.headerCrc);
+
+    {
+        UINT32 crcVal = 0xFFFFFFFF;
+
+        firmware_calcCrc(&crcVal, (UINT8*)&fwHdr, sizeof(tFirmwareHeader)-4);
+
+        printf("Calculated Header CRC = 0x%08X\n", crcVal);
+
+        if (crcVal != fwHdr.headerCrc)
+        {
+            printf(" --> Wrong CRC!\n");
+            return kErrorGeneralError;
+        }
+    }
+
+    {
+        UINT32  crcVal = 0xFFFFFFFF;
+        int     i = fwHdr.length;
+        UINT8   aBuffer[8 * 1024];
+        int     length;
+        UINT32  offset = firmware_getImageBase(kFirmwareImageUpdate) + sizeof(tFirmwareHeader);
+
+        printf("Calc image CRC...\n");
+
+        while (i > 0)
+        {
+            if (i > sizeof(aBuffer))
+                length = sizeof(aBuffer);
+            else
+                length = i;
+
+            flash_read(offset, aBuffer, length);
+
+            firmware_calcCrc(&crcVal, aBuffer, length);
+
+            i -= length;
+            offset += length;
+        }
+
+        printf("Calculated Image CRC = 0x%08X\n", crcVal);
+
+        if (crcVal != fwHdr.crc)
+        {
+            printf(" --> Wrong CRC!\n");
+            return kErrorGeneralError;
+        }
+    }
+
+    drvInstance_l.nextImage = imageType_p;
+
+    return kErrorOk;
+}
