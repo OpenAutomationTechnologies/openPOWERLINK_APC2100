@@ -179,7 +179,8 @@ architecture rtl of toplevel is
             pcie_test_out_test_out                      : out   std_logic_vector(8 downto 0);
             host_benchmark_pio_export                   : out   std_logic_vector(7 downto 0);
             pcp_0_cpu_resetrequest_resetrequest         : in    std_logic;
-            pcp_0_cpu_resetrequest_resettaken           : out   std_logic
+            pcp_0_cpu_resetrequest_resettaken           : out   std_logic;
+            status_led_pio_export                       : out   std_logic_vector(1 downto 0)
         );
     end component mnSinglePcieDrv;
 
@@ -214,10 +215,31 @@ architecture rtl of toplevel is
     signal reconfigToGxb    : std_logic_vector(3 downto 0);
     signal reconfigFromGxb  : std_logic_vector(4 downto 0);
     signal reconfigBusy     : std_logic;
+
+    signal plkSeLed         : std_logic_vector(1 downto 0);
+    alias  plkStatusLed     : std_logic is plkSeLed(0);
+    alias  plkErrorLed      : std_logic is plkSeLed(1);
 begin
     oRmiiRefClk <= clk50; --FIXME: Use phase shift clock?
 
     nConfig_PG_CRC <= 'Z'; --FIXME: Connect to remote update control for factory reconfig!
+
+    ----------------------------------------------------------------------------
+    -- LEDs
+    --FIXME: Mismatch data sheet LEDs / schematic
+
+    -- LED RJ45
+    onPlkActLed         <= not iLinkPlkPhy;
+    onPlkLinkLed        <= not plkStatusLed;
+
+    -- LED pair red/green L2
+    onPlkActLedGelb     <= not iLinkPlkPhy;
+    onReserveLed        <= cnInactivated; -- Unused
+
+    -- LED pair red/green L3
+    onPlkStatLedRot     <= not plkErrorLed;
+    onPlkStatLedGruen   <= not plkStatusLed;
+    ----------------------------------------------------------------------------
 
     inst : component mnSinglePcieDrv
         port map (
@@ -284,7 +306,8 @@ begin
             pcie_powerdown_pll_powerdown            => cInactivated,
             pcie_powerdown_gxb_powerdown            => cInactivated,
             pcie_test_out_test_out                  => open,
-            host_benchmark_pio_export               => open
+            host_benchmark_pio_export               => open,
+            status_led_pio_export                   => plkSeLed
         );
 
     -- Pll Instance
