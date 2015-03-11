@@ -1,16 +1,16 @@
 /**
 ********************************************************************************
-\file   event.h
+\file   plkled.h
 
-\brief  Definitions of the MN demo event handler
+\brief  Definitions for POWERLINK LED
 
-The file contains the definitions for the MN demo event handler.
+This header file provides the definitions for POWERLINK LED used by the
+openPOWERLINK stack.
 *******************************************************************************/
 
 /*------------------------------------------------------------------------------
-Copyright (c) 2014, Bernecker+Rainer Industrie-Elektronik Ges.m.b.H. (B&R)
-Copyright (c) 2013, SYSTEC electronic GmbH
-Copyright (c) 2013, Kalycito Infotech Private Ltd.All rights reserved.
+Copyright (c) 2015, Bernecker+Rainer Industrie-Elektronik Ges.m.b.H. (B&R)
+Copyright (c) 2015, Kalycito Infotech Private Ltd.All rights reserved.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -36,8 +36,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ------------------------------------------------------------------------------*/
 
-#ifndef _INC_demo_event_H_
-#define _INC_demo_event_H_
+#ifndef _INC_plkled_H_
+#define _INC_plkled_H_
 
 //------------------------------------------------------------------------------
 // includes
@@ -61,14 +61,13 @@ extern "C"
 {
 #endif
 
-void initEvents(BOOL* pfGsOff_p);
-void exitEvents(void);
-tOplkError processEvents(tOplkApiEventType EventType_p,
-                         tOplkApiEventArg* pEventArg_p,
-                         void* pUserArg_p);
+void  plkled_init(void);
+void  plkled_exit(void);
+void  plkled_setStatusLed(BOOL fOn_p);
+void  plkled_setErrorLed(BOOL fOn_p);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _INC_demo_event_H_ */
+#endif /* _INC_plkled_H_ */

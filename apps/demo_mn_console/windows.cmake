@@ -39,8 +39,11 @@ ADD_DEFINITIONS(-D_CONSOLE -DWPCAP -DHAVE_REMOTE -D_CRT_SECURE_NO_WARNINGS)
 SET (DEMO_ARCH_SOURCES
      ${DEMO_ARCHSOURCES}
      ${COMMON_SOURCE_DIR}/system/system-windows.c
+     ${COMMON_SOURCE_DIR}/plkled/plkled-xpc2100.c
      ${CONTRIB_SOURCE_DIR}/console/console-windows.c
      )
+
+INCLUDE_DIRECTORIES(${COMMON_SOURCE_DIR}/plkled)
 
 ################################################################################
 # Set architecture specific libraries

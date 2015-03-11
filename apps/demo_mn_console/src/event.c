@@ -46,6 +46,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <console/console.h>
 #include "event.h"
 
+#include <plkled.h>
+
 //============================================================================//
 //            G L O B A L   D E F I N I T I O N S                             //
 //============================================================================//
@@ -138,6 +140,21 @@ The function initializes the applications event module
 void initEvents(BOOL* pfGsOff_p)
 {
     pfGsOff_l = pfGsOff_p;
+    plkled_init();
+}
+
+//------------------------------------------------------------------------------
+/**
+\brief  Shutdown applications event module
+
+The function shuts down the applications event module
+
+\ingroup module_demo_mn_console
+*/
+//------------------------------------------------------------------------------
+void exitEvents(void)
+{
+    plkled_exit();
 }
 
 //------------------------------------------------------------------------------
@@ -202,6 +219,23 @@ tOplkError processEvents(tOplkApiEventType EventType_p,
             ret = processSdoEvent(EventType_p, pEventArg_p, pUserArg_p);
             break;
 #endif
+
+        case kOplkApiEventLed:
+            /* POWERLINK S/E LED needs to be changed */
+            switch (pEventArg_p->ledEvent.ledType)
+            {
+                case kLedTypeStatus:
+                    plkled_setStatusLed(pEventArg_p->ledEvent.fOn);
+                    break;
+
+                case kLedTypeError:
+                    plkled_setErrorLed(pEventArg_p->ledEvent.fOn);
+                    break;
+
+                default:
+                    break;
+            }
+            break;
 
         default:
             break;
