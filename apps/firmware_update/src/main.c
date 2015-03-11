@@ -35,13 +35,25 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ------------------------------------------------------------------------------*/
-
+#define _CRT_NONSTDC_NO_WARNINGS    // for MSVC 2005 or higher
 //------------------------------------------------------------------------------
 // includes
 //------------------------------------------------------------------------------
 #include <stdio.h>
 #include <limits.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <assert.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <io.h>
+#include <sys/types.h>
+#include <sys/utime.h>
+#include <sys/timeb.h>
+#include <time.h>
+#include <direct.h>
+
 
 #include <oplk/oplk.h>
 #include <oplk/debugstr.h>
@@ -62,7 +74,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define IP_ADDR           0xc0a86401          // 192.168.100.1
 #define SUBNET_MASK       0xFFFFFF00          // 255.255.255.0
 #define DEFAULT_GATEWAY   0xC0A864FE          // 192.168.100.C_ADR_RT1_DEF_NODE_ID
-
+#define READ_FILE
 //------------------------------------------------------------------------------
 // module global vars
 //------------------------------------------------------------------------------
@@ -158,7 +170,13 @@ int main(int argc, char** argv)
     }
 
 #ifdef READ_FILE
-    readFirmwareFile(opts.fwImage, &firmwareImage);
+    ret = readFirmwareFile(opts.fwImage, &firmwareImage);
+
+    if (ret != kErrorOk)
+    {
+        printf("Unable to read firmware image error 0x%2X\n", ret);
+        goto Exit;
+    }
 #else
     firmwareImage.pFwImageBuff = (unsigned char*) aTestBuffer;
     firmwareImage.length = (INT)sizeof(aTestBuffer);
@@ -311,7 +329,70 @@ static int getOptions(int argc_p, char** argv_p, tOptions* pOpts_p)
     }
     return 0;
 }
+#ifdef READ_FILE
+//------------------------------------------------------------------------------
+/**
+\brief  Read firmware image to update
 
+The function reads the specied firware image file and store into the
+intermediate buffer used to copy into the device flash.
+
+\param  pFwBuffer_p        Pointer to the buffer containing update image.
+\param  length_p           Length of the update image.
+
+\return The function returns the tOplkError error code.
+
+*/
+//------------------------------------------------------------------------------
+static tOplkError readFirmwareFile(char* pszFwFileName_p, tFirmwareImage* pFirmwareImage_p)
+{
+    int         fwFileHandle;
+    int         readSize = 0;
+    int         readlength;
+
+    printf("Reading firware file %s\n", pszFwFileName_p);
+
+    fwFileHandle = open(pszFwFileName_p, O_RDONLY | O_BINARY, 0666);
+
+    if (fwFileHandle < 0)
+    {   // error occurred
+        errno = (UINT32) errno;
+        printf("Unable to open File handle %x\n", errno);
+        return kErrorNoResource;
+    }
+
+    pFirmwareImage_p->length = lseek(fwFileHandle, 0, SEEK_END);
+    lseek(fwFileHandle, 0, SEEK_SET);
+
+    pFirmwareImage_p->pFwImageBuff = malloc(pFirmwareImage_p->length);
+
+    if (pFirmwareImage_p->pFwImageBuff == NULL)
+    {
+        return kErrorNoResource;
+    }
+
+    readlength = pFirmwareImage_p->length;
+
+    do
+    {
+        readSize = read(fwFileHandle, pFirmwareImage_p->pFwImageBuff, readlength);
+
+        if (readSize <= 0)
+        {
+            printf("Unable to read File\n");
+            return kErrorNoResource;
+        }
+
+        readlength -= readSize;
+        pFirmwareImage_p->pFwImageBuff = (unsigned char*) (pFirmwareImage_p->pFwImageBuff + readlength);
+
+    } while (readlength > 0);
+
+
+    close(fwFileHandle);
+    return kErrorOk;
+}
+#endif
 //------------------------------------------------------------------------------
 /**
 \brief  Write new firmware image
@@ -334,7 +415,7 @@ static tOplkError updateFirmwareImage(UINT8* pFwBuffer_p, INT length_p)
     do
     {
         console_printlog("Transfer test buffer to kernel stack with size %d...\n",
-                         (INT)sizeof(aTestBuffer));
+                         (INT) length_p);
         ret = ctrlu_writeFileToKernel(fileType, length_p, pFwBuffer_p);
         console_printlog("ctrlu_writeFileToKernel() returned with 0x%X\n", ret);
 

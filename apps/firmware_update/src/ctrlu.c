@@ -353,6 +353,8 @@ tOplkError ctrlu_writeFileToKernel(tCtrlFileType type_p, INT length_p, UINT8* pB
     UINT16          retVal;
     tCtrlDataChunk  dataChunk;
     INT             length = length_p;
+    float           completePer = 0;
+    float           completedLength, initlength = (float)(length_p);
 
     if ((pBuffer_p == NULL) || (length_p <= 0))
         return kErrorInvalidOperation;
@@ -424,7 +426,13 @@ tOplkError ctrlu_writeFileToKernel(tCtrlFileType type_p, INT length_p, UINT8* pB
             }
         }
 #endif
+        // Display progress of download
+        completedLength = (float) length;
+        completePer = (((initlength - completedLength) / initlength) * 100.0);
+        printf("\rProgress [%.0f%%]", floor(completePer));
+        fflush(stdout);
     } while (length > 0);
+    printf("\n");
 
 Exit:
     return ret;
