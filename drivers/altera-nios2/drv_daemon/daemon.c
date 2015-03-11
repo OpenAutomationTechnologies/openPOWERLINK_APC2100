@@ -104,6 +104,7 @@ static BOOL ctrlCommandExecCb(tCtrlCmdType cmd_p, UINT16* pRet_p, UINT16* pStatu
                               BOOL* pfExit_p);
 static tOplkError writeUpdateImage(tCtrlDataChunk* pDataChunk_p);
 static tOplkError setNextReconfigFirmware(tFirmwareImageType imageType_p);
+static tOplkError checkUpdateImage(void);
 
 //============================================================================//
 //            P U B L I C   F U N C T I O N S                                 //
@@ -163,6 +164,10 @@ int main(void)
                     if (setNextReconfigFirmware(kFirmwareImageUpdate) == kErrorOk)
                     {
                         PRINTF(" --> Valid image found, trigger reconfig!\n");
+                        PRINTF("halt terminal\n%c", 4);
+#ifndef NDEBUG
+                        usleep(2000000U);
+#endif
                         firmware_reconfig(kFirmwareImageUpdate);
                     }
                 }
@@ -192,6 +197,7 @@ int main(void)
         if (drvInstance_l.nextImage != kFirmwareImageUnknown)
         {
             usleep(2000000U); //jz: Wait here for some longer time!
+            PRINTF("halt terminal\n%c", 4);
             firmware_reconfig(drvInstance_l.nextImage);
         }
 
@@ -209,6 +215,8 @@ int main(void)
 //============================================================================//
 //            P R I V A T E   F U N C T I O N S                               //
 //============================================================================//
+/// \name Private Functions
+/// \{
 
 //------------------------------------------------------------------------------
 /**
@@ -435,7 +443,7 @@ This function sets the reconfiguration to a valid firmware image.
 //------------------------------------------------------------------------------
 static tOplkError setNextReconfigFirmware(tFirmwareImageType imageType_p)
 {
-    tFirmwareHeader fwHdr;
+    tOplkError      ret;
 
     switch (imageType_p)
     {
@@ -451,72 +459,83 @@ static tOplkError setNextReconfigFirmware(tFirmwareImageType imageType_p)
             return kErrorInvalidOperation;
     }
 
-    if (flash_read(firmware_getImageBase(kFirmwareImageUpdate), (UINT8*)&fwHdr,
-        sizeof(tFirmwareHeader)) != 0)
-    {
-        return kErrorNoResource;
-    }
-
-    //FIXME: Check if signature is okay - maybe firmware_checkImageHeader??
-
-    PRINTF("Firmware header:\n");
-    PRINTF(" Signature      0x%08X\n", fwHdr.signature);
-    PRINTF(" Version        0x%08X\n", fwHdr.version);
-    PRINTF(" Time stamp     0x%08X\n", fwHdr.timeStamp);
-    PRINTF(" Length         0x%08X\n", fwHdr.length);
-    PRINTF(" CRC            0x%08X\n", fwHdr.crc);
-    PRINTF(" OPLK Version   0x%08X\n", fwHdr.oplkVersion);
-    PRINTF(" OPLK Feature   0x%08X\n", fwHdr.oplkFeature);
-    PRINTF(" Header CRC     0x%08X\n", fwHdr.headerCrc);
-
-    {
-        UINT32 crcVal = 0xFFFFFFFF;
-
-        firmware_calcCrc(&crcVal, (UINT8*)&fwHdr, sizeof(tFirmwareHeader)-4);
-
-        PRINTF("Calculated Header CRC = 0x%08X\n", crcVal);
-
-        if (crcVal != fwHdr.headerCrc)
-        {
-            PRINTF(" --> Wrong CRC!\n");
-            return kErrorGeneralError;
-        }
-    }
-
-    {
-        UINT32  crcVal = 0xFFFFFFFF;
-        int     i = fwHdr.length;
-        UINT8   aBuffer[8 * 1024];
-        int     length;
-        UINT32  offset = firmware_getImageBase(kFirmwareImageUpdate) + sizeof(tFirmwareHeader);
-
-        PRINTF("Calc image CRC...\n");
-
-        while (i > 0)
-        {
-            if (i > sizeof(aBuffer))
-                length = sizeof(aBuffer);
-            else
-                length = i;
-
-            flash_read(offset, aBuffer, length);
-
-            firmware_calcCrc(&crcVal, aBuffer, length);
-
-            i -= length;
-            offset += length;
-        }
-
-        PRINTF("Calculated Image CRC = 0x%08X\n", crcVal);
-
-        if (crcVal != fwHdr.crc)
-        {
-            PRINTF(" --> Wrong CRC!\n");
-            return kErrorGeneralError;
-        }
-    }
+    ret = checkUpdateImage();
+    if (ret != kErrorOk)
+        return ret;
 
     drvInstance_l.nextImage = imageType_p;
 
     return kErrorOk;
 }
+
+//------------------------------------------------------------------------------
+/**
+\brief    Check update image
+
+This function checks the update image header and the update image itself.
+
+\return This function returns tOplkError error codes.
+*/
+//------------------------------------------------------------------------------
+static tOplkError checkUpdateImage(void)
+{
+    UINT8           aBuffer[8 * 1024];
+    tFirmwareHeader firmwareHeader;
+    UINT32          crcVal;
+    UINT            i;
+    UINT            length;
+    UINT32          offset;
+
+    if (flash_read(firmware_getImageBase(kFirmwareImageUpdate),
+       (UINT8*)&firmwareHeader, sizeof(tFirmwareHeader)) != 0)
+    {
+        return kErrorNoResource;
+    }
+
+    PRINTF("Firmware header:\n");
+    PRINTF(" Signature      0x%08X (0x%08X)\n", firmwareHeader.signature, FIRMWARE_HEADER_SIGNATUR);
+    PRINTF(" Version        0x%08X (0x%08X)\n", firmwareHeader.version, FIRMWARE_HEADER_VERSION);
+    PRINTF(" Time stamp     0x%08X\n", firmwareHeader.timeStamp);
+    PRINTF(" Length         0x%08X\n", firmwareHeader.length);
+    PRINTF(" CRC            0x%08X\n", firmwareHeader.crc);
+    PRINTF(" OPLK Version   0x%08X\n", firmwareHeader.oplkVersion);
+    PRINTF(" OPLK Feature   0x%08X\n", firmwareHeader.oplkFeature);
+    PRINTF(" Header CRC     0x%08X\n", firmwareHeader.headerCrc);
+
+    if (firmware_checkHeader(&firmwareHeader) != 0)
+        return kErrorGeneralError;
+
+    PRINTF("Calc image CRC...\n");
+
+    i = firmwareHeader.length;
+    offset = firmware_getImageBase(kFirmwareImageUpdate) + sizeof(tFirmwareHeader);
+    crcVal = 0xFFFFFFFF;
+
+    while (i > 0)
+    {
+        if (i > sizeof(aBuffer))
+            length = sizeof(aBuffer);
+        else
+            length = i;
+
+        if (flash_read(offset, aBuffer, length) != 0)
+            return kErrorNoResource;
+
+        firmware_calcCrc(&crcVal, aBuffer, length);
+
+        i -= length;
+        offset += length;
+    }
+
+    PRINTF("Calculated Image CRC = 0x%08X\n", crcVal);
+
+    if (crcVal != firmwareHeader.crc)
+    {
+        PRINTF(" --> Wrong CRC!\n");
+        return kErrorGeneralError;
+    }
+
+    return kErrorOk;
+}
+
+/// \}
