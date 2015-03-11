@@ -47,6 +47,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // const defines
 //------------------------------------------------------------------------------
 
+#define FIRMWARE_HEADER_SIGNATUR    0x46575550  ///< Header signature
+#define FIRMWARE_HEADER_VERSION     0x00000001  ///< Header version
+
 //------------------------------------------------------------------------------
 // typedef
 //------------------------------------------------------------------------------
