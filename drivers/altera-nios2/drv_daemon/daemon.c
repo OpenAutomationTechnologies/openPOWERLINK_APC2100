@@ -152,6 +152,29 @@ int main(void)
 
         flash_getInfo(&drvInstance_l.flashInfo);
 
+        switch (firmware_getCurrentImageType())
+        {
+            case kFirmwareImageFactory:
+                PRINTF("Firmware in factory image mode\n");
+                // Try to boot update image only after por!
+                if (firmware_getStatus() == kFirmwareStatusPor)
+                {
+                    PRINTF(" -> Came from POR, check for valid update image...\n");
+                    if (setNextReconfigFirmware(kFirmwareImageUpdate) == kErrorOk)
+                    {
+                        PRINTF(" --> Valid image found, trigger reconfig!\n");
+                        firmware_reconfig(kFirmwareImageUpdate);
+                    }
+                }
+                break;
+
+            case kFirmwareImageUpdate:
+                PRINTF("Firmware in update image mode\n");
+                // We are in update image, nothing to do...
+            default:
+                break;
+        }
+
         ret = initPlk();
 
         PRINTF("Initialization returned with \"%s\" (0x%X)\n",
