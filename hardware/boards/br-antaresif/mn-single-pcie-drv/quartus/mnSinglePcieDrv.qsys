@@ -198,6 +198,14 @@
          type = "boolean";
       }
    }
+   element status_led_pio.s1
+   {
+      datum baseAddress
+      {
+         value = "4128";
+         type = "String";
+      }
+   }
    element onchip_memory2_0.s1
    {
       datum baseAddress
@@ -211,14 +219,6 @@
       datum baseAddress
       {
          value = "4096";
-         type = "String";
-      }
-   }
-   element status_led_pio.s1
-   {
-      datum baseAddress
-      {
-         value = "4224";
          type = "String";
       }
    }
@@ -310,7 +310,7 @@
  <parameter name="projectName">mn-single-pcie-drv.qpf</parameter>
  <parameter name="sopcBorderPoints" value="false" />
  <parameter name="systemHash" value="1" />
- <parameter name="timeStamp" value="1426062975792" />
+ <parameter name="timeStamp" value="1426075696770" />
  <parameter name="useTestBenchNamingPattern" value="false" />
  <instanceScript></instanceScript>
  <interface name="clk50" internal="clk50.clk_in" type="clock" dir="end" />
@@ -1069,19 +1069,19 @@
    start="clk50.clk"
    end="status_led_pio.clk" />
  <connection
-   kind="avalon"
-   version="13.0"
-   start="pcp_0.slow_bridge"
-   end="status_led_pio.s1">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x1080" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
    kind="reset"
    version="13.0"
-   start="clk25.clk_reset"
+   start="pcie_hard_ip_0.pcie_core_reset"
    end="status_led_pio.reset" />
+ <connection
+   kind="avalon"
+   version="13.0"
+   start="pcie_hard_ip_0.bar1"
+   end="status_led_pio.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x1020" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
 </system>
