@@ -227,7 +227,7 @@ static tOplkError initPlk(void)
 
     if (ret != kErrorOk)
     {
-        printf("Could not initialize control module\n");
+        PRINTF("Could not initialize control module\n");
         goto Exit;
     }
 
@@ -457,26 +457,28 @@ static tOplkError setNextReconfigFirmware(tFirmwareImageType imageType_p)
         return kErrorNoResource;
     }
 
-    printf("Firmware header:\n");
-    printf(" Signature      0x%08X\n", fwHdr.signature);
-    printf(" Version        0x%08X\n", fwHdr.version);
-    printf(" Time stamp     0x%08X\n", fwHdr.timeStamp);
-    printf(" Length         0x%08X\n", fwHdr.length);
-    printf(" CRC            0x%08X\n", fwHdr.crc);
-    printf(" OPLK Version   0x%08X\n", fwHdr.oplkVersion);
-    printf(" OPLK Feature   0x%08X\n", fwHdr.oplkFeature);
-    printf(" Header CRC     0x%08X\n", fwHdr.headerCrc);
+    //FIXME: Check if signature is okay - maybe firmware_checkImageHeader??
+
+    PRINTF("Firmware header:\n");
+    PRINTF(" Signature      0x%08X\n", fwHdr.signature);
+    PRINTF(" Version        0x%08X\n", fwHdr.version);
+    PRINTF(" Time stamp     0x%08X\n", fwHdr.timeStamp);
+    PRINTF(" Length         0x%08X\n", fwHdr.length);
+    PRINTF(" CRC            0x%08X\n", fwHdr.crc);
+    PRINTF(" OPLK Version   0x%08X\n", fwHdr.oplkVersion);
+    PRINTF(" OPLK Feature   0x%08X\n", fwHdr.oplkFeature);
+    PRINTF(" Header CRC     0x%08X\n", fwHdr.headerCrc);
 
     {
         UINT32 crcVal = 0xFFFFFFFF;
 
         firmware_calcCrc(&crcVal, (UINT8*)&fwHdr, sizeof(tFirmwareHeader)-4);
 
-        printf("Calculated Header CRC = 0x%08X\n", crcVal);
+        PRINTF("Calculated Header CRC = 0x%08X\n", crcVal);
 
         if (crcVal != fwHdr.headerCrc)
         {
-            printf(" --> Wrong CRC!\n");
+            PRINTF(" --> Wrong CRC!\n");
             return kErrorGeneralError;
         }
     }
@@ -488,7 +490,7 @@ static tOplkError setNextReconfigFirmware(tFirmwareImageType imageType_p)
         int     length;
         UINT32  offset = firmware_getImageBase(kFirmwareImageUpdate) + sizeof(tFirmwareHeader);
 
-        printf("Calc image CRC...\n");
+        PRINTF("Calc image CRC...\n");
 
         while (i > 0)
         {
@@ -505,11 +507,11 @@ static tOplkError setNextReconfigFirmware(tFirmwareImageType imageType_p)
             offset += length;
         }
 
-        printf("Calculated Image CRC = 0x%08X\n", crcVal);
+        PRINTF("Calculated Image CRC = 0x%08X\n", crcVal);
 
         if (crcVal != fwHdr.crc)
         {
-            printf(" --> Wrong CRC!\n");
+            PRINTF(" --> Wrong CRC!\n");
             return kErrorGeneralError;
         }
     }
