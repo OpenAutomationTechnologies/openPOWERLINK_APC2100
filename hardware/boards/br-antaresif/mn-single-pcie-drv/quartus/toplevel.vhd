@@ -142,6 +142,7 @@ architecture rtl of toplevel is
             openmac_0_rmii_rxError                      : in    std_logic_vector(0 downto 0);
             openmac_0_rmii_rxCrsDataValid               : in    std_logic_vector(0 downto 0);
             openmac_0_rmii_rxData                       : in    std_logic_vector(1 downto 0);
+            openmac_0_pktactivity_export                : out   std_logic;
             epcs_flash_dclk                             : out   std_logic;
             epcs_flash_sce                              : out   std_logic;
             epcs_flash_sdo                              : out   std_logic;
@@ -219,6 +220,9 @@ architecture rtl of toplevel is
     signal plkSeLed         : std_logic_vector(1 downto 0);
     alias  plkStatusLed     : std_logic is plkSeLed(0);
     alias  plkErrorLed      : std_logic is plkSeLed(1);
+
+    signal macActivity      : std_logic;
+    signal plkActivity      : std_logic;
 begin
     oRmiiRefClk <= clk50; --FIXME: Use phase shift clock?
 
@@ -228,12 +232,14 @@ begin
     -- LEDs
     --FIXME: Mismatch data sheet LEDs / schematic
 
+    plkActivity <= iLinkPlkPhy and not macActivity; -- On = Link / Blink = Activity
+
     -- LED RJ45
-    onPlkActLed         <= not iLinkPlkPhy;
+    onPlkActLed         <= not plkActivity;
     onPlkLinkLed        <= not plkStatusLed;
 
     -- LED pair red/green L2
-    onPlkActLedGelb     <= not iLinkPlkPhy;
+    onPlkActLedGelb     <= not plkActivity;
     onReserveLed        <= cnInactivated; -- Unused
 
     -- LED pair red/green L3
@@ -269,6 +275,7 @@ begin
             openmac_0_rmii_rxError                  => iRmiiRxErr,
             openmac_0_rmii_rxCrsDataValid           => iRmiiCrsDv,
             openmac_0_rmii_rxData                   => iRmiiRxData,
+            openmac_0_pktactivity_export            => macActivity,
 
             epcs_flash_dclk                         => oFlash_Clk,
             epcs_flash_sce                          => oFlash_nCS,

@@ -310,7 +310,7 @@
  <parameter name="projectName">mn-single-pcie-drv.qpf</parameter>
  <parameter name="sopcBorderPoints" value="false" />
  <parameter name="systemHash" value="1" />
- <parameter name="timeStamp" value="1426010140515" />
+ <parameter name="timeStamp" value="1426062975792" />
  <parameter name="useTestBenchNamingPattern" value="false" />
  <instanceScript></instanceScript>
  <interface name="clk50" internal="clk50.clk_in" type="clock" dir="end" />
@@ -436,6 +436,11 @@
  <interface
    name="status_led_pio"
    internal="status_led_pio.external_connection"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="openmac_0_pktactivity"
+   internal="openmac_0.pktActivity"
    type="conduit"
    dir="end" />
  <module kind="clock_source" version="13.0" enabled="1" name="clk50">
@@ -571,7 +576,7 @@
   <parameter name="gui_tmrCount" value="1" />
   <parameter name="gui_tmrPulseEn" value="false" />
   <parameter name="gui_tmrPulseWdt" value="10" />
-  <parameter name="gui_actEn" value="false" />
+  <parameter name="gui_actEn" value="true" />
   <parameter name="gui_sdcEn" value="true" />
   <parameter name="AUTO_DMACLK_CLOCK_RATE" value="100000000" />
   <parameter name="AUTO_PKTCLK_CLOCK_RATE" value="-1" />

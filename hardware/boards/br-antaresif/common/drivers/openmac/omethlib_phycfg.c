@@ -65,6 +65,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //------------------------------------------------------------------------------
 // const defines
 //------------------------------------------------------------------------------
+#define PHYCFG_DP8384_PHYCR_REGADDR     0x19
+#define PHYCFG_DP8384_PHYCR_LED_CNFG0   (1 << 5)
 
 //------------------------------------------------------------------------------
 // local types
@@ -95,5 +97,25 @@ This function configures the phy on the Antares Interface card.
 //------------------------------------------------------------------------------
 int omethPhyCfgUser(OMETH_H pEth_p)
 {
+    int             ret;
+    int             i;
+    unsigned short  regData;
+    unsigned short  regNumber;
+
+    for (i=0; i<pEth_p->phyCount; i++)
+    {
+        // Read ohy control register
+        regNumber = PHYCFG_DP8384_PHYCR_REGADDR;
+        ret = omethPhyRead(pEth_p, i, regNumber, &regData);
+        if(ret != 0)
+            return ret;
+
+        // Set LED_CNFG[0] to Mode 1 '1'
+        regData |= PHYCFG_DP8384_PHYCR_LED_CNFG0;
+        ret = omethPhyWrite(pEth_p, i, regNumber, regData);
+        if(ret != 0)
+            return ret;
+    }
+
     return 0;
 }
