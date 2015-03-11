@@ -34,7 +34,7 @@ APP_NAME=drv_daemon
 
 # Driver sources
 APP_SOURCES="\
-${OPLK_BASE_DIR}/drivers/altera-nios2/drv_daemon/daemon.c \
+${APC_BASE_DIR}/drivers/altera-nios2/drv_daemon/daemon.c \
 ${APC_BASE_DIR}/hardware/drivers/flash/src/flash-nios2.c \
 ${APC_BASE_DIR}/hardware/drivers/firmware/src/firmware-nios2.c \
 "
