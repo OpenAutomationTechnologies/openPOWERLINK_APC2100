@@ -412,22 +412,23 @@ static tOplkError updateFirmwareImage(UINT8* pFwBuffer_p, INT length_p)
     tOplkError      ret;
     tCtrlFileType   fileType = kCtrlFileTypeFirmwareUpdate;
 
-    do
+    console_printlog("Transfer test buffer to kernel stack with size %d...\n",
+                        (INT) length_p);
+    ret = ctrlu_writeFileToKernel(fileType, length_p, pFwBuffer_p);
+    if (ret != kErrorOk)
     {
-        console_printlog("Transfer test buffer to kernel stack with size %d...\n",
-                         (INT) length_p);
-        ret = ctrlu_writeFileToKernel(fileType, length_p, pFwBuffer_p);
         console_printlog("ctrlu_writeFileToKernel() returned with 0x%X\n", ret);
+        return ret;
+    }
 
-        console_printlog("Set Update image\n");
-        ret = ctrlu_setNextImageFlag(fileType);
+    console_printlog("Set Update image\n");
+    ret = ctrlu_setNextImageFlag(fileType);
 
-        if (ret != kErrorOk)
-        {
-            console_printlog("Error in updating image 0x%2X\n", ret);
-        }
-
-    } while (ret != kErrorOk);
+    if (ret != kErrorOk)
+    {
+        console_printlog("Error in updating image 0x%2X\n", ret);
+        return ret;
+    }
 
     return ret;
 }
