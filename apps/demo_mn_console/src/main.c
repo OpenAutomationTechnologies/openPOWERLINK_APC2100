@@ -159,6 +159,7 @@ int main(int argc, char** argv)
 
 Exit:
     shutdownPowerlink();
+    exitEvents();
     shutdownApp();
     system_exit();
 
