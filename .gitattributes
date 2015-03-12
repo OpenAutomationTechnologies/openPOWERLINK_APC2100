@@ -8,3 +8,4 @@ bin/ export-ignore
 hardware/ export-ignore
 drivers/ export-ignore
 tools/windows/installer/PCIedriver.nsi export-ignore
+tools/altera-nios2/ export-ignore
