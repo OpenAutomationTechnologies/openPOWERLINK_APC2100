@@ -49,7 +49,7 @@ MACRO(FIND_OPLK_LIBRARY OPLK_NODE_TYPE)
 
     # Set oplk library directory
     SET(OPLKLIB_DIR ${OPLK_ROOT_DIR}/stack/lib/${SYSTEM_NAME_DIR}/${SYSTEM_PROCESSOR_DIR})
-
+    INCLUDE_DIRECTORIES(${OPLK_ROOT_DIR}/stack/proj/${SYSTEM_NAME_DIR}/lib${OPLKLIB_NAME})
     # Search for release library
     UNSET(OPLKLIB CACHE)
     MESSAGE(STATUS "Searching for LIBRARY ${OPLKLIB_NAME} in ${OPLKLIB_DIR}")

@@ -40,6 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // includes
 //------------------------------------------------------------------------------
 #include <oplk/oplk.h>
+#include <common/driver.h>
 #include "plkled.h"
 
 //============================================================================//
@@ -65,17 +66,31 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //------------------------------------------------------------------------------
 // const defines
 //------------------------------------------------------------------------------
-#define PLKLED_SE_BASE          0x1020  // Offset in BAR1
-#define PLKLED_STATUS_MASK      (1 << 0)
-#define PLKLED_ERROR_MASK       (1 << 1)
-
+#define PLKLED_OUTSET_OFFSET              0x10
+#define PLKLED_OUTCLEAR_OFFSET            0x14
+#define PLKLED_STATUS_MASK                (1 << 0)
+#define PLKLED_ERROR_MASK                 (1 << 1)
+#define PLKLED_WRITE_REG(offset, val)     (*((volatile UINT32*)((plkLedInstance_l.pPlkLedReg + offset))) = (val))
+#define PLKLED_READ_REG(offset)           (*((volatile UINT32*)((plkLedInstance_l.pPlkLedReg + offset))))
 //------------------------------------------------------------------------------
 // local types
 //------------------------------------------------------------------------------
+/**
+\brief Local instance of POWERLINK LED module
+
+The following structure defines a local parameters required by POWERLINK LED
+module.
+*/
+typedef struct
+{
+    HANDLE    oplkFileHandle;    ///< File handle for openPOWERLINK driver.
+    UINT8*    pPlkLedReg;        ///< Pointer to base address of POWERLINK LEDs.
+} tPlkLedInstance;
 
 //------------------------------------------------------------------------------
 // local vars
 //------------------------------------------------------------------------------
+static tPlkLedInstance     plkLedInstance_l;
 
 //------------------------------------------------------------------------------
 // local function prototypes
@@ -94,6 +109,38 @@ The function initializes the GPIO module.
 //------------------------------------------------------------------------------
 void plkled_init(void)
 {
+    UINT32      errCode;
+    ULONG       bytesReturned;
+    tPlkLedMem  plkLedMem;
+
+    plkLedInstance_l.oplkFileHandle = CreateFile(PLK_DEV_FILE,    // Name of the NT "device" to open
+                              GENERIC_READ | GENERIC_WRITE,         // Access rights requested
+                              FILE_SHARE_READ | FILE_SHARE_WRITE,   // Share access - NONE
+                              NULL,                                 // Security attributes - not used!
+                              OPEN_EXISTING,                        // Device must exist to open it.
+                              FILE_ATTRIBUTE_NORMAL,                // Open for overlapped I/O
+                              NULL);                                // Extended attributes - not used!
+
+    if (plkLedInstance_l.oplkFileHandle == INVALID_HANDLE_VALUE)
+    {
+        errCode = GetLastError();
+        DEBUG_LVL_ERROR_TRACE("%s() CreateFile failed with error 0x%x\n", __func__, errCode);
+        return;
+    }
+
+    if (!DeviceIoControl(plkLedInstance_l.oplkFileHandle, PLK_CMD_GET_PLK_LED_BASE,
+        0, 0,
+        &plkLedMem, sizeof(tPlkLedMem),
+        &bytesReturned, NULL))
+    {
+        DEBUG_LVL_ERROR_TRACE("%s() Error in DeviceIoControl : %d\n", __func__, GetLastError());
+        return;
+    }
+    
+    if (bytesReturned == 0 || plkLedMem.pBaseAddr == NULL)
+        return;
+
+    plkLedInstance_l.pPlkLedReg = (UINT8*) plkLedMem.pBaseAddr;
 }
 
 //------------------------------------------------------------------------------
@@ -105,6 +152,25 @@ The function shuts down the GPIO module.
 //------------------------------------------------------------------------------
 void plkled_exit(void)
 {
+    ULONG       bytesReturned;
+    tPlkLedMem  plkLedMem;
+
+    plkled_setStatusLed(FALSE);
+    plkled_setErrorLed(FALSE);
+
+    plkLedMem.pBaseAddr = plkLedInstance_l.pPlkLedReg;
+
+    if (!DeviceIoControl(plkLedInstance_l.oplkFileHandle, PLK_CMD_FREE_PLK_LED_BASE,
+        0, 0,
+        &plkLedMem, sizeof(tPlkLedMem),
+        &bytesReturned, NULL))
+    {
+        DEBUG_LVL_ERROR_TRACE("%s() Error in DeviceIoControl : %d\n", __func__, GetLastError());
+    }
+
+    plkLedInstance_l.pPlkLedReg = NULL;
+
+    CloseHandle(plkLedInstance_l.oplkFileHandle);
 }
 
 //------------------------------------------------------------------------------
@@ -118,15 +184,18 @@ The function sets the POWERLINK status LED.
 //------------------------------------------------------------------------------
 void plkled_setStatusLed(BOOL fOn_p)
 {
+    UINT32  reg;
+
+    reg = PLKLED_READ_REG(PLKLED_OUTSET_OFFSET);
+    reg |= PLKLED_STATUS_MASK;
+
     if (fOn_p != FALSE)
     {
-        //FIXME: Implement switching on the LED
-        //reg |= PLKLED_STATUS_MASK;
+        PLKLED_WRITE_REG(PLKLED_OUTSET_OFFSET, reg);
     }
     else
     {
-        //FIXME: Implement switching off the LED
-        //reg &= ~PLKLED_STATUS_MASK;
+        PLKLED_WRITE_REG(PLKLED_OUTCLEAR_OFFSET, reg);
     }
 }
 
@@ -141,15 +210,18 @@ The function sets the POWERLINK error LED.
 //------------------------------------------------------------------------------
 void plkled_setErrorLed(BOOL fOn_p)
 {
+    UINT32  reg;
+
+    reg = PLKLED_READ_REG(PLKLED_OUTSET_OFFSET);
+    reg |= PLKLED_ERROR_MASK;
+
     if (fOn_p != FALSE)
     {
-        //FIXME: Implement switching on the LED
-        //reg |= PLKLED_ERROR_MASK;
+        PLKLED_WRITE_REG(PLKLED_OUTSET_OFFSET, reg);
     }
     else
     {
-        //FIXME: Implement switching off the LED
-        //reg &= ~PLKLED_ERROR_MASK;
+        PLKLED_WRITE_REG(PLKLED_OUTCLEAR_OFFSET, reg);
     }
 }
 
