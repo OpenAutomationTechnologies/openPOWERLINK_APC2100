@@ -65,6 +65,8 @@ do
     cp --parents $i ${RELEASE_DIR}
 done
 
+cp -r --parents $(find ${STACK_LIB_DIR} -type d -name "*${STACK_LIB_NAME}*") ${RELEASE_DIR}
+
 # copy stack includes
 STACK_INCLUDES="\
 ${OPLK_DIR}/stack/include/oplk \
