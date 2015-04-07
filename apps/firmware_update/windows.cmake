@@ -41,5 +41,6 @@ SET (DEMO_ARCH_SOURCES
      ${COMMON_SOURCE_DIR}/system/system-windows.c
      ${CONTRIB_SOURCE_DIR}/console/console-windows.c
      ${OPLK_ROOT_DIR}/stack/src/arch/windows/target-windows.c
+     ${OPLK_ROOT_DIR}/contrib/trace/trace-windows.c
      )
 
