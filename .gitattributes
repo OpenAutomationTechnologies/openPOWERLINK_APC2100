@@ -6,6 +6,7 @@ release.sh export-ignore
 
 apps/firmware_update export-ignore
 bin/ export-ignore
+contrib/productiontest export-ignore
 hardware/ export-ignore
 drivers/ export-ignore
 tools/windows/installer/PCIedriver.nsi export-ignore

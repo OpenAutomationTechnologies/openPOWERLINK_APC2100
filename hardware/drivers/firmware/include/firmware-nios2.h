@@ -47,8 +47,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // const defines
 //------------------------------------------------------------------------------
 
-#define FIRMWARE_HEADER_SIGNATUR    0x46575550  ///< Header signature
-#define FIRMWARE_HEADER_VERSION     0x00000001  ///< Header version
+#define FIRMWARE_HEADER_SIGNATUR            0x46575550  ///< Header signature
+#define FIRMWARE_HEADER_VERSION             0x00000001  ///< Header version
+
+#define FIRMWARE_DEVICE_HEADER_SIGNATURE    0x44455643  ///< Device signature
+#define FIRMWARE_DEVICE_HEADER_VERSION      0x00000001  ///< Device version
 
 //------------------------------------------------------------------------------
 // typedef
@@ -70,6 +73,21 @@ typedef struct
     UINT32              oplkFeature;    ///< openPOWERLINK feature
     UINT32              headerCrc;      ///< Firmware header crc
 } tFirmwareHeader;
+
+/**
+*  \brief Firmware device header
+*
+*  The struct defines the device header which is stored in the configuration flash
+*  in the factory image section.
+*/
+typedef struct
+{
+    UINT32              signature;      ///< Device header signature
+    UINT32              version;        ///< Device header version
+    UINT8               aMacAddr[6];    ///< Device MAC address
+    UINT16              reserved;       ///< Reserved
+    UINT32              headerCrc;      ///< Device header crc
+} tFirmwareDeviceHeader;
 
 //------------------------------------------------------------------------------
 // function prototypes

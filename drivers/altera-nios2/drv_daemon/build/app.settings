@@ -37,6 +37,7 @@ APP_SOURCES="\
 ${APC_BASE_DIR}/drivers/altera-nios2/drv_daemon/daemon.c \
 ${APC_BASE_DIR}/hardware/drivers/flash/src/flash-nios2.c \
 ${APC_BASE_DIR}/hardware/drivers/firmware/src/firmware-nios2.c \
+${APC_BASE_DIR}/contrib/prodtest/prodtest.c \
 "
 
 APP_INCLUDES="\
@@ -44,6 +45,7 @@ ${OPLK_BASE_DIR}/stack/include \
 ${OPLK_BASE_DIR}/stack/include/kernel \
 ${APC_BASE_DIR}/hardware/drivers/flash/include \
 ${APC_BASE_DIR}/hardware/drivers/firmware/include \
+${APC_BASE_DIR}/contrib/prodtest \
 "
 
 APP_CFLAGS="\

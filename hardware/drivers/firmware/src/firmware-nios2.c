@@ -297,6 +297,26 @@ UINT32 firmware_getImageBase(tFirmwareImageType sel_p)
 
 //------------------------------------------------------------------------------
 /**
+\brief  Get device header base
+
+The function returns the base of the device header
+
+\return The function returns the device header base.
+\retval FIRMWARE_INVALID_IMAGE_BASE     If the image's base address is not
+                                        specified in firmware-info.h.
+*/
+//------------------------------------------------------------------------------
+UINT32 firmware_getDeviceHeaderBase(void)
+{
+#if defined(FIRMWARE_DEVICE_HEADER_BASE)
+    return FIRMWARE_DEVICE_HEADER_BASE;
+#else
+    return FIRMWARE_INVALID_IMAGE_BASE
+#endif
+}
+
+//------------------------------------------------------------------------------
+/**
 \brief  Calculate CRC
 
 The function calculates the CRC value of the given buffer. The caller must
@@ -363,6 +383,34 @@ int firmware_checkHeader(tFirmwareHeader* pHeader_p)
 
     // Check header CRC
     firmware_calcCrc(&crcval, pHeader_p, sizeof(tFirmwareHeader) - 4);
+    if (crcval != pHeader_p->headerCrc)
+        return -1;
+
+    return 0;
+}
+
+//------------------------------------------------------------------------------
+/**
+\brief  Check firmware device header
+
+The function checks the given firmware device header.
+It checks the signature, version and the header CRC.
+
+\param  pHeader_p   Pointer to header which is checked for validity
+
+The function returns 0 if the image header is valid, otherwise -1.
+*/
+//------------------------------------------------------------------------------
+int firmware_checkDeviceHeader(tFirmwareDeviceHeader* pHeader_p)
+{
+    UINT32 crcval = 0xFFFFFFFF;
+
+    if ((pHeader_p->signature != FIRMWARE_DEVICE_HEADER_SIGNATURE) ||
+       (pHeader_p->version != FIRMWARE_DEVICE_HEADER_VERSION))
+        return -1;
+
+    // Check header CRC
+    firmware_calcCrc(&crcval, pHeader_p, sizeof(tFirmwareDeviceHeader) - 4);
     if (crcval != pHeader_p->headerCrc)
         return -1;
 

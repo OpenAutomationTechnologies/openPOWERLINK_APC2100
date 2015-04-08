@@ -104,8 +104,10 @@ tFirmwareImageType  firmware_getCurrentImageType(void);
 tFirmwareStatus     firmware_getStatus(void);
 
 UINT32              firmware_getImageBase(tFirmwareImageType sel_p);
+UINT32              firmware_getDeviceHeaderBase(void);
 int                 firmware_calcCrc(UINT32* pCrcVal_p, UINT8* pBuffer_p, INT length_p);
 int                 firmware_checkHeader(tFirmwareHeader* pHeader_p);
+int                 firmware_checkDeviceHeader(tFirmwareDeviceHeader* pHeader_p);
 
 void                firmware_process(void);
 void                firmware_reconfig(tFirmwareImageType next_p);

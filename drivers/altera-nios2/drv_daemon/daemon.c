@@ -49,9 +49,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <oplk/oplk.h>
 #include <oplk/debugstr.h>
 #include <kernel/ctrlk.h>
+#include <kernel/ctrlkcal.h>
 
 #include <flash.h>
 #include <firmware.h>
+#include <prodtest.h>
 
 //============================================================================//
 //            G L O B A L   D E F I N I T I O N S                             //
@@ -76,6 +78,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //------------------------------------------------------------------------------
 // const defines
 //------------------------------------------------------------------------------
+#define MAC_IS_ZERO(aMac)   ((aMac[0] == 0) && (aMac[1] == 0) && \
+                             (aMac[2] == 0) && (aMac[3] == 0) && \
+                             (aMac[4] == 0) && (aMac[5] == 0))
 
 //------------------------------------------------------------------------------
 // local types
@@ -105,6 +110,7 @@ static BOOL ctrlCommandExecCb(tCtrlCmdType cmd_p, UINT16* pRet_p, UINT16* pStatu
 static tOplkError writeUpdateImage(tCtrlDataChunk* pDataChunk_p);
 static tOplkError setNextReconfigFirmware(tFirmwareImageType imageType_p);
 static tOplkError checkUpdateImage(void);
+static tOplkError getMacAddress(UINT8* pMacAddr_p);
 
 //============================================================================//
 //            P U B L I C   F U N C T I O N S                                 //
@@ -180,6 +186,12 @@ int main(void)
                 break;
         }
 
+        if (prodtest_init() != 0)
+        {
+            PRINTF("Production test initialize failed\n");
+            break;
+        }
+
         ret = initPlk();
 
         PRINTF("Initialization returned with \"%s\" (0x%X)\n",
@@ -201,6 +213,7 @@ int main(void)
             firmware_reconfig(drvInstance_l.nextImage);
         }
 
+        prodtest_exit();
         firmware_exit();
         flash_exit();
 
@@ -275,6 +288,9 @@ static void bgtPlk(void)
 
         if (fExit != FALSE)
             break;
+
+        if (prodtest_process() != 0)
+            break;
     }
 }
 
@@ -305,6 +321,31 @@ static BOOL ctrlCommandExecCb(tCtrlCmdType cmd_p, UINT16* pRet_p, UINT16* pStatu
 
     switch (cmd_p)
     {
+        case kCtrlInitStack:
+            // Shutdown production test module before initializing the stack
+            prodtest_exit();
+
+            // Get init parameter and exchange MAC address
+            {
+                tCtrlInitParam  initParam;
+                UINT8           aMacAddr[6];
+                BOOL            fMacAddrValid;
+
+                if (ctrlkcal_readInitParam(&initParam) != kErrorOk)
+                    return FALSE;
+
+                fMacAddrValid = (getMacAddress(aMacAddr) == kErrorOk);
+
+                // Only exchange zero MAC address with valid MAC
+                if (MAC_IS_ZERO(initParam.aMacAddress) && fMacAddrValid)
+                {
+                    OPLK_MEMCPY(initParam.aMacAddress, aMacAddr, 6);
+                    ctrlkcal_storeInitParam(&initParam);
+                }
+            }
+
+            return FALSE;
+
         case kCtrlWriteFile:
             retVal = ctrlk_getFileTransferChunk(&dataChunk);
             if (retVal != kErrorOk)
@@ -534,6 +575,42 @@ static tOplkError checkUpdateImage(void)
         PRINTF(" --> Wrong CRC!\n");
         return kErrorGeneralError;
     }
+
+    return kErrorOk;
+}
+
+//------------------------------------------------------------------------------
+/**
+\brief    Get MAC address
+
+This function reads the MAC address from the flash and writes it to the given
+address.
+
+\param  pMacAddr_p      Pointer to memory where the MAC address is returned.
+
+\return This function returns tOplkError error codes.
+*/
+//------------------------------------------------------------------------------
+static tOplkError getMacAddress(UINT8* pMacAddr_p)
+{
+    UINT32                  offset;
+    tFirmwareDeviceHeader   deviceHeader;
+
+    if (pMacAddr_p == NULL)
+        return kErrorGeneralError;
+
+    offset = firmware_getDeviceHeaderBase();
+
+    if (offset == FIRMWARE_INVALID_IMAGE_BASE)
+        return kErrorGeneralError;
+
+    if (flash_read(offset, (UINT8*)&deviceHeader, sizeof(tFirmwareDeviceHeader)) != 0)
+        return kErrorGeneralError;
+
+    if (firmware_checkDeviceHeader(&deviceHeader) != 0)
+        return kErrorGeneralError;
+
+    OPLK_MEMCPY(pMacAddr_p, deviceHeader.aMacAddr, 6);
 
     return kErrorOk;
 }

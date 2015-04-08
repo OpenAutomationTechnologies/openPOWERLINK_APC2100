@@ -1,10 +1,11 @@
 /**
 ********************************************************************************
-\file   firmware-info.h
+\file   prodtest.h
 
-\brief  Firmware information header
+\brief  Post production test implementation
 
-Firmware information header file for xPC2100 Nios II design.
+This file contains the definitions for the post production test.
+
 *******************************************************************************/
 
 /*------------------------------------------------------------------------------
@@ -34,22 +35,20 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ------------------------------------------------------------------------------*/
 
-#ifndef _INC_firmware_info_H_
-#define _INC_firmware_info_H_
+#ifndef _INC_prodtest_H_
+#define _INC_prodtest_H_
 
 //------------------------------------------------------------------------------
 // includes
 //------------------------------------------------------------------------------
+#include <oplk/oplk.h>
 
 //------------------------------------------------------------------------------
 // const defines
 //------------------------------------------------------------------------------
-#define FIRMWARE_FACTORY_IMAGE_BASE     0x000000
-#define FIRMWARE_UPDATE_IMAGE_BASE      0x080000
-#define FIRMWARE_DEVICE_HEADER_BASE     (FIRMWARE_UPDATE_IMAGE_BASE - 256)
-
-#define FIRMWARE_WDOG_ENABLE            0       // Deactivate WDOG
-#define FIRMWARE_WDOG_TIMEOUT           0xFFF   // Timeout is unused
+#define POSTPROTEST_MACADDR         0x00, 0x00, 0x00, 0xC0, 0xFF, 0xEE
+#define POSTPROTEST_IPADDR          192, 168, 0, 1
+#define POSTPROTEST_MEMTEST_SIZE    1024
 
 //------------------------------------------------------------------------------
 // typedef
@@ -60,11 +59,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //------------------------------------------------------------------------------
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
+
+int prodtest_init(void);
+void prodtest_exit(void);
+int prodtest_process(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _INC_firmware_info_H_ */
+#endif /* _INC_prodtest_H_ */
