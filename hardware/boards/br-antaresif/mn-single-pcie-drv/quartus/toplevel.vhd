@@ -181,7 +181,8 @@ architecture rtl of toplevel is
             host_benchmark_pio_export                   : out   std_logic_vector(7 downto 0);
             pcp_0_cpu_resetrequest_resetrequest         : in    std_logic;
             pcp_0_cpu_resetrequest_resettaken           : out   std_logic;
-            status_led_pio_export                       : out   std_logic_vector(1 downto 0)
+            status_led_pio_export                       : out   std_logic_vector(1 downto 0);
+            testport_pio_export                         : out   std_logic_vector(7 downto 0)
         );
     end component mnSinglePcieDrv;
 
@@ -223,6 +224,15 @@ architecture rtl of toplevel is
 
     signal macActivity      : std_logic;
     signal plkActivity      : std_logic;
+
+    signal testport                 : std_logic_vector(7 downto 0);
+    alias  testportEnable           : std_logic is testport(7);
+    alias  testportPlkActLed        : std_logic is testport(5);
+    alias  testportPlkLinkLed       : std_logic is testport(4);
+    alias  testportPlkActLedGelb    : std_logic is testport(3);
+    alias  testportReservedLed      : std_logic is testport(2);
+    alias  testportStatLedRot       : std_logic is testport(1);
+    alias  testportStatLedGruen     : std_logic is testport(0);
 begin
     oRmiiRefClk <= clk50; --FIXME: Use phase shift clock?
 
@@ -235,16 +245,22 @@ begin
     plkActivity <= iLinkPlkPhy and not macActivity; -- On = Link / Blink = Activity
 
     -- LED RJ45
-    onPlkActLed         <= not plkActivity;
-    onPlkLinkLed        <= not plkStatusLed;
+    onPlkActLed         <=  not testportPlkActLed when testportEnable = cActivated else
+                            not plkActivity;
+    onPlkLinkLed        <=  not testportPlkLinkLed when testportEnable = cActivated else
+                            not plkStatusLed;
 
     -- LED pair red/green L2
-    onPlkActLedGelb     <= not plkActivity;
-    onReserveLed        <= cnInactivated; -- Unused
+    onPlkActLedGelb     <=  not testportPlkActLedGelb when testportEnable = cActivated else
+                            not plkActivity;
+    onReserveLed        <=  not testportReservedLed when testportEnable = cActivated else
+                            cnInactivated; -- Unused
 
     -- LED pair red/green L3
-    onPlkStatLedRot     <= not plkErrorLed;
-    onPlkStatLedGruen   <= not plkStatusLed;
+    onPlkStatLedRot     <=  not testportStatLedRot when testportEnable = cActivated else
+                            not plkErrorLed;
+    onPlkStatLedGruen   <=  not testportStatLedGruen when testportEnable = cActivated else
+                            not plkStatusLed;
     ----------------------------------------------------------------------------
 
     inst : component mnSinglePcieDrv
@@ -314,7 +330,8 @@ begin
             pcie_powerdown_gxb_powerdown            => cInactivated,
             pcie_test_out_test_out                  => open,
             host_benchmark_pio_export               => open,
-            status_led_pio_export                   => plkSeLed
+            status_led_pio_export                   => plkSeLed,
+            testport_pio_export                     => testport
         );
 
     -- Pll Instance

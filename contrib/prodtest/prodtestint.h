@@ -133,6 +133,7 @@ typedef enum
 {
     kProdtestCommandNoTest          = 0,    ///< No production test
     kProdtestCommandCommunication   = 1,    ///< Communication test
+    kProdtestCommandLed             = 3,    ///< LED test
     kProdtestCommandRam             = 6,    ///< RAM test
     kProdtestCommandSetMacAddress   = 15,   ///< Set MAC address to NV memory
 

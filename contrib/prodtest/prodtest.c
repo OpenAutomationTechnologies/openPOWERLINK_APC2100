@@ -51,6 +51,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <firmware.h>
 
 #ifdef __NIOS2__
+#include <system.h>
 #include <io.h>
 #endif
 
@@ -150,6 +151,7 @@ static UINT16 calcIpHdrChecksum(tProdtestIpHdr* pIpHdr_p);
 static int initArpResp(tEdrvTxBuffer* pTxBuffer_p, int bufCnt_p);
 static int initCmdReply(tEdrvTxBuffer* pTxBuffer_p, int bufCnt_p);
 static int memoryTest(UINT8* pBase_p, int length_p);
+static int ledTest(UINT8 ledVal_p);
 static int writeMacAddress(UINT8* pMacAddr_p);
 
 //============================================================================//
@@ -522,6 +524,13 @@ static int handleRxProdtestFrame(tPlkFrame* pFrame_p, UINT size_p)
 
                         break;
 
+                    case kProdtestCommandLed:
+                        PRINTF(" --> kProdtestCommandLed\n");
+
+                        pResp->pmeHeader.error = ledTest(pCmd->data[0]);
+
+                        break;
+
                     case kProdtestCommandSetMacAddress:
                         PRINTF(" --> kProdtestCommandSetMacAddress\n");
                         pResp->pmeHeader.error = writeMacAddress(pCmd->data);
@@ -770,6 +779,28 @@ static int memoryTest(UINT8* pBase_p, int length_p)
     }
 
     return 0;
+}
+
+//------------------------------------------------------------------------------
+/**
+\brief  Perform LED test
+
+This function sets the given LED value to the LED test port.
+
+\param  ledVal_p        Value to be set to the LED test port.
+
+\return The function returns 0 on success, 1 if the test is not supported.
+*/
+//------------------------------------------------------------------------------
+static int ledTest(UINT8 ledVal_p)
+{
+#if defined(TESTPORT_PIO_BASE)
+    IO_WR32(TESTPORT_PIO_BASE, ledVal_p);
+
+    return 0;
+#else
+    return 1;
+#endif
 }
 
 //------------------------------------------------------------------------------
