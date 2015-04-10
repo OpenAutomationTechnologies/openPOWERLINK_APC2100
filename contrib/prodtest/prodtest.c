@@ -511,6 +511,12 @@ static int handleRxProdtestFrame(tPlkFrame* pFrame_p, UINT size_p)
 
                 switch (pCmd->pmeHeader.command)
                 {
+                    case kProdtestCommandNoTest:
+                        // Nothing to do, mark Tx frame as free and exit
+                        PRINTF(" --> kProdtestCommandNoTest\n");
+                        pTxBuffer->txFrameSize = 0;
+                        return 0;
+
                     case kProdtestCommandCommunication:
                         // Nothing special to do, just send the response frame
                         PRINTF(" --> kProdtestCommandCommunication\n");
