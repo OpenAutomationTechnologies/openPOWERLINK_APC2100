@@ -273,7 +273,7 @@ void prodtest_exit(void)
 
     edrv_freeTxBuffer(&prodtestInstance_l.txBufArpResponse);
 
-    edrv_shutdown();
+    edrv_exit();
 
     target_enableGlobalInterrupt(TRUE);
 }
