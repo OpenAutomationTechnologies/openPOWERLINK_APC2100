@@ -315,8 +315,8 @@ static BOOL ctrlCommandExecCb(tCtrlCmdType cmd_p, UINT16* pRet_p, UINT16* pStatu
                               BOOL* pfExit_p)
 {
     tOplkError      retVal = kErrorOk;
-    UINT16          status;
-    BOOL            fExit;
+    UINT16          status = kCtrlStatusUnchanged;
+    BOOL            fExit = FALSE;
     tCtrlDataChunk  dataChunk;
 
     switch (cmd_p)
