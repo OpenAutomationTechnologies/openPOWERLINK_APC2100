@@ -304,7 +304,7 @@
       <AssemblyDebug>true</AssemblyDebug>
     </Link>
     <Inf>
-      <TimeStamp>2.1.1.2</TimeStamp>
+      <TimeStamp>2.2.0.0</TimeStamp>
       <SpecifyDriverVerDirectiveVersion>true</SpecifyDriverVerDirectiveVersion>
     </Inf>
   </ItemDefinitionGroup>
