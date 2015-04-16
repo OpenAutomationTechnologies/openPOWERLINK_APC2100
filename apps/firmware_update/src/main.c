@@ -188,6 +188,8 @@ Exit:
 
     system_exit();
 
+    printf("Please reboot the APC/PPC2100 to complete the firmware update\n");
+
     return 0;
 }
 
@@ -267,13 +269,6 @@ static tOplkError initPowerlink(UINT32 cycleLen_p, const BYTE* macAddr_p)
         return ret;
     }
 
-    ret = ctrlu_initStack(&initParam);
-    if (ret != kErrorOk)
-    {
-        fprintf(stderr, "oplk_init() failed with \"%s\" (0x%04x)\n", debugstr_getRetValStr(ret), ret);
-        return ret;
-    }
-
     return kErrorOk;
 }
 
@@ -286,7 +281,6 @@ The function shuts down the kernel stack.
 //------------------------------------------------------------------------------
 static void shutdownPowerlink(void)
 {
-    printf("Shutdown Stack\n");
     ctrlu_shutdownStack();
     ctrlu_exit();
 }
@@ -350,14 +344,14 @@ static tOplkError readFirmwareFile(char* pszFwFileName_p, tFirmwareImage* pFirmw
     int         readSize = 0;
     int         readlength;
 
-    printf("Reading firware file %s\n", pszFwFileName_p);
+    printf("Reading firmware update image %s\n", pszFwFileName_p);
 
     fwFileHandle = open(pszFwFileName_p, O_RDONLY | O_BINARY, 0666);
 
     if (fwFileHandle < 0)
     {   // error occurred
         errno = (UINT32) errno;
-        printf("Unable to open File handle %x\n", errno);
+        printf("Unable to open file handle %x\n", errno);
         return kErrorNoResource;
     }
 
@@ -379,7 +373,7 @@ static tOplkError readFirmwareFile(char* pszFwFileName_p, tFirmwareImage* pFirmw
 
         if (readSize <= 0)
         {
-            printf("Unable to read File\n");
+            printf("Unable to read file\n");
             return kErrorNoResource;
         }
 
@@ -412,23 +406,25 @@ static tOplkError updateFirmwareImage(UINT8* pFwBuffer_p, INT length_p)
     tOplkError      ret;
     tCtrlFileType   fileType = kCtrlFileTypeFirmwareUpdate;
 
-    console_printlog("Transfer test buffer to kernel stack with size %d...\n",
+    printf("Transfer firmware update image to kernel stack with size %d...\n",
                         (INT) length_p);
     ret = ctrlu_writeFileToKernel(fileType, length_p, pFwBuffer_p);
     if (ret != kErrorOk)
     {
-        console_printlog("ctrlu_writeFileToKernel() returned with 0x%X\n", ret);
+        printf("ctrlu_writeFileToKernel() returned with 0x%X\n", ret);
         return ret;
     }
 
-    console_printlog("Set Update image\n");
+    printf("Updating next image flag to boot from new image on next boot...");
     ret = ctrlu_setNextImageFlag(fileType);
 
     if (ret != kErrorOk)
     {
-        console_printlog("Error in updating image 0x%2X\n", ret);
+        printf("Failed with error:0x%2X\n", ret);
         return ret;
     }
+
+    printf("DONE!\n");
 
     return ret;
 }
