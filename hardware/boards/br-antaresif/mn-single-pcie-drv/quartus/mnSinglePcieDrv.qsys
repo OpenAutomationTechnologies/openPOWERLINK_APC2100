@@ -12,6 +12,32 @@
    element $${FILENAME}
    {
    }
+   element atomicmodify_0
+   {
+      datum _sortIndex
+      {
+         value = "8";
+         type = "int";
+      }
+      datum sopceditor_expanded
+      {
+         value = "0";
+         type = "boolean";
+      }
+   }
+   element atomicmodify_1
+   {
+      datum _sortIndex
+      {
+         value = "11";
+         type = "int";
+      }
+      datum sopceditor_expanded
+      {
+         value = "0";
+         type = "boolean";
+      }
+   }
    element clk100
    {
       datum _sortIndex
@@ -110,7 +136,7 @@
    {
       datum _sortIndex
       {
-         value = "14";
+         value = "16";
          type = "int";
       }
       datum sopceditor_expanded
@@ -139,7 +165,7 @@
    {
       datum _sortIndex
       {
-         value = "12";
+         value = "14";
          type = "int";
       }
       datum sopceditor_expanded
@@ -152,7 +178,7 @@
    {
       datum _sortIndex
       {
-         value = "11";
+         value = "13";
          type = "int";
       }
       datum sopceditor_expanded
@@ -165,7 +191,7 @@
    {
       datum _sortIndex
       {
-         value = "10";
+         value = "12";
          type = "int";
       }
    }
@@ -173,7 +199,7 @@
    {
       datum _sortIndex
       {
-         value = "13";
+         value = "15";
          type = "int";
       }
    }
@@ -196,6 +222,40 @@
       {
          value = "0";
          type = "boolean";
+      }
+   }
+   element atomicmodify_0.s0
+   {
+      datum _lockedAddress
+      {
+         value = "1";
+         type = "boolean";
+      }
+      datum baseAddress
+      {
+         value = "524288";
+         type = "String";
+      }
+   }
+   element atomicmodify_1.s0
+   {
+      datum _lockedAddress
+      {
+         value = "1";
+         type = "boolean";
+      }
+      datum baseAddress
+      {
+         value = "524288";
+         type = "String";
+      }
+   }
+   element testport_pio.s1
+   {
+      datum baseAddress
+      {
+         value = "57344";
+         type = "String";
       }
    }
    element host_benchmark.s1
@@ -222,14 +282,6 @@
          type = "String";
       }
    }
-   element testport_pio.s1
-   {
-      datum baseAddress
-      {
-         value = "57344";
-         type = "String";
-      }
-   }
    element onchip_memory2_0.s2
    {
       datum baseAddress
@@ -242,7 +294,7 @@
    {
       datum _sortIndex
       {
-         value = "8";
+         value = "9";
          type = "int";
       }
       datum sopceditor_expanded
@@ -255,7 +307,7 @@
    {
       datum _sortIndex
       {
-         value = "15";
+         value = "17";
          type = "int";
       }
       datum sopceditor_expanded
@@ -281,7 +333,7 @@
    {
       datum _sortIndex
       {
-         value = "16";
+         value = "18";
          type = "int";
       }
       datum sopceditor_expanded
@@ -294,7 +346,7 @@
    {
       datum _sortIndex
       {
-         value = "9";
+         value = "10";
          type = "int";
       }
       datum sopceditor_expanded
@@ -331,7 +383,7 @@
  <parameter name="projectName">mn-single-pcie-drv.qpf</parameter>
  <parameter name="sopcBorderPoints" value="false" />
  <parameter name="systemHash" value="1" />
- <parameter name="timeStamp" value="1428492468402" />
+ <parameter name="timeStamp" value="1429591706811" />
  <parameter name="useTestBenchNamingPattern" value="false" />
  <instanceScript></instanceScript>
  <interface name="clk50" internal="clk50.clk_in" type="clock" dir="end" />
@@ -841,6 +893,14 @@
   <parameter name="width" value="8" />
   <parameter name="clockRate" value="50000000" />
  </module>
+ <module kind="atomicmodify" version="1.1.0" enabled="1" name="atomicmodify_0">
+  <parameter name="sys_m0Addrw" value="19" />
+  <parameter name="AUTO_C0_CLOCK_RATE" value="100000000" />
+ </module>
+ <module kind="atomicmodify" version="1.1.0" enabled="1" name="atomicmodify_1">
+  <parameter name="sys_m0Addrw" value="19" />
+  <parameter name="AUTO_C0_CLOCK_RATE" value="100000000" />
+ </module>
  <connection
    kind="reset"
    version="13.0"
@@ -1139,6 +1199,62 @@
    end="testport_pio.s1">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0xe000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="clock"
+   version="13.0"
+   start="clk100.clk"
+   end="atomicmodify_0.c0" />
+ <connection
+   kind="reset"
+   version="13.0"
+   start="clk25.clk_reset"
+   end="atomicmodify_0.r0" />
+ <connection
+   kind="avalon"
+   version="13.0"
+   start="atomicmodify_0.m0"
+   end="sram_0.uas">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="13.0"
+   start="pcp_0.cpu_bridge"
+   end="atomicmodify_0.s0">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x00080000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="clock"
+   version="13.0"
+   start="clk100.clk"
+   end="atomicmodify_1.c0" />
+ <connection
+   kind="reset"
+   version="13.0"
+   start="pcie_hard_ip_0.pcie_core_reset"
+   end="atomicmodify_1.r0" />
+ <connection
+   kind="avalon"
+   version="13.0"
+   start="mm_bridge_0.m0"
+   end="atomicmodify_1.s0">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x00080000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="13.0"
+   start="atomicmodify_1.m0"
+   end="sram_0.uas">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0000" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
