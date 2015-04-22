@@ -91,6 +91,7 @@ typedef struct
     UINT32              writeOffset;        ///< Current flash write offset
     UINT32              writeEraseOffset;   ///< Current flash erase offset
     tFirmwareImageType  nextImage;          ///< Next firmware image to be configured
+    BOOL                fStackInitialized;  ///< Stack is initialized
 
 } tDrvInstance;
 
@@ -344,7 +345,36 @@ static BOOL ctrlCommandExecCb(tCtrlCmdType cmd_p, UINT16* pRet_p, UINT16* pStatu
                 }
             }
 
+            drvInstance_l.fStackInitialized = TRUE;
+
             return FALSE;
+
+        case kCtrlCleanupStack:
+        case kCtrlShutdown:
+            if (drvInstance_l.fStackInitialized)
+            {
+                drvInstance_l.fStackInitialized = FALSE;
+                return FALSE;
+            }
+
+            // Stack has not been initialized, thus skip command execution in
+            // ctrlk module. But report back to the user that kernel stack is
+            // shut down successfully.
+            retVal = kErrorOk;
+            *pRet_p = (UINT16)retVal;
+
+            if (cmd_p == kCtrlShutdown)
+            {
+                status = kCtrlStatusUnavailable;
+                fExit = TRUE;
+            }
+            else
+            {
+                status = kCtrlStatusReady;
+                fExit = FALSE;
+            }
+
+            break;
 
         case kCtrlWriteFile:
             retVal = ctrlk_getFileTransferChunk(&dataChunk);
