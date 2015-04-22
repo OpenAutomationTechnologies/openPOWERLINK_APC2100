@@ -163,11 +163,16 @@ int main(void)
         switch (firmware_getCurrentImageType())
         {
             case kFirmwareImageFactory:
+            {
+                tFirmwareStatus firmwareStatus = firmware_getStatus();
+
                 PRINTF("Firmware in factory image mode\n");
-                // Try to boot update image only after por!
-                if (firmware_getStatus() == kFirmwareStatusPor)
+                PRINTF(" -> Firmware status = %d\n", firmwareStatus);
+
+                if ((firmwareStatus == kFirmwareStatusPor) ||
+                    (firmwareStatus == kFirmwareStatusReconfig))
                 {
-                    PRINTF(" -> Came from POR, check for valid update image...\n");
+                    PRINTF(" -> Check for valid update image...\n");
                     if (setNextReconfigFirmware(kFirmwareImageUpdate) == kErrorOk)
                     {
                         PRINTF(" --> Valid image found, trigger reconfig!\n");
@@ -178,6 +183,7 @@ int main(void)
                         firmware_reconfig(kFirmwareImageUpdate);
                     }
                 }
+            }
                 break;
 
             case kFirmwareImageUpdate:
