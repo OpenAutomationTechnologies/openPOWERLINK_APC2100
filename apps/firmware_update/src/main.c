@@ -74,6 +74,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define IP_ADDR           0xc0a86401          // 192.168.100.1
 #define SUBNET_MASK       0xFFFFFF00          // 255.255.255.0
 #define DEFAULT_GATEWAY   0xC0A864FE          // 192.168.100.C_ADR_RT1_DEF_NODE_ID
+#define FW_HEADER_SIZE    32                  // In bytes
+
 #define READ_FILE
 //------------------------------------------------------------------------------
 // module global vars
@@ -103,7 +105,8 @@ const unsigned char     aTestBuffer[] =
 //------------------------------------------------------------------------------
 typedef struct
 {
-    char        fwImage[256];  
+    char        fwImage[256];
+    BOOL        fInvalidateUpdateImage;
 } tOptions;
 
 typedef struct
@@ -119,10 +122,11 @@ typedef struct
 //------------------------------------------------------------------------------
 // local function prototypes
 //------------------------------------------------------------------------------
-static int getOptions(int argc_p, char** argv_p, tOptions* pOpts_p);
+static int        getOptions(int argc_p, char** argv_p, tOptions* pOpts_p);
 static tOplkError initPowerlink(UINT32 cycleLen_p, const BYTE* macAddr_p);
-static void shutdownPowerlink(void);
+static void       shutdownPowerlink(void);
 static tOplkError updateFirmwareImage(UINT8* pFwBuffer_p, INT length_p);
+static tOplkError invalidateFirmwareImage(void);
 
 //============================================================================//
 //            P U B L I C   F U N C T I O N S                                 //
@@ -149,7 +153,12 @@ int main(int argc, char** argv)
     UINT32                      version;
     tFirmwareImage              firmwareImage;
 
-    getOptions(argc, argv, &opts);
+    memset(&opts, 0, sizeof(tOptions));
+
+    if (getOptions(argc, argv, &opts) == -1)
+    {
+        return -1;
+    }
 
     if (system_init() != 0)
     {
@@ -169,6 +178,16 @@ int main(int argc, char** argv)
         goto Exit;
     }
 
+    if (opts.fInvalidateUpdateImage)
+    {
+        // Erase the existing update image and fallback to factory image
+        ret = invalidateFirmwareImage();
+        if (ret != kErrorOk)
+            goto ExitFail;
+        else
+            goto Exit;
+    }
+
 #ifdef READ_FILE
     ret = readFirmwareFile(opts.fwImage, &firmwareImage);
 
@@ -181,14 +200,17 @@ int main(int argc, char** argv)
     firmwareImage.pFwImageBuff = (unsigned char*) aTestBuffer;
     firmwareImage.length = (INT)sizeof(aTestBuffer);
 #endif
-    updateFirmwareImage(firmwareImage.pFwImageBuff, firmwareImage.length);
+    ret = updateFirmwareImage(firmwareImage.pFwImageBuff, firmwareImage.length);
+    if (ret != kErrorOk)
+        goto ExitFail;
 
 Exit:
     shutdownPowerlink();
-
+ExitFail:
     system_exit();
 
-    printf("Please reboot the APC/PPC2100 to complete the firmware update\n");
+    if (ret == kErrorOk)
+        printf("Please reboot the APC/PPC2100 to complete the firmware update\n");
 
     return 0;
 }
@@ -309,20 +331,26 @@ static int getOptions(int argc_p, char** argv_p, tOptions* pOpts_p)
     strncpy(pOpts_p->fwImage, "image.bin", 256);
 
     /* get command line parameters */
-    while ((opt = getopt(argc_p, argv_p, "i:")) != -1)
+    while ((opt = getopt(argc_p, argv_p, "i:e")) != -1)
     {
         switch (opt)
         {
             case 'i':
                 strncpy(pOpts_p->fwImage, optarg, 256);
                 break;
+            case 'e':
+                pOpts_p->fInvalidateUpdateImage = TRUE;
+                break;
             default: /* '?' */
-                printf("Usage: %s [-i UPDATE IMAGE] \n", argv_p[0]);
+                printf("Usage: %s [-i <UPDATE IMAGE> -e] \n"
+                       "-i <UPDATE IMAGE>: Use the specified update image\n"
+                       "-e : Invalidate the existing update image\n", argv_p[0]);
                 return -1;
         }
     }
     return 0;
 }
+
 #ifdef READ_FILE
 //------------------------------------------------------------------------------
 /**
@@ -387,6 +415,7 @@ static tOplkError readFirmwareFile(char* pszFwFileName_p, tFirmwareImage* pFirmw
     return kErrorOk;
 }
 #endif
+
 //------------------------------------------------------------------------------
 /**
 \brief  Write new firmware image
@@ -403,7 +432,7 @@ flash.
 //------------------------------------------------------------------------------
 static tOplkError updateFirmwareImage(UINT8* pFwBuffer_p, INT length_p)
 {
-    tOplkError      ret;
+    tOplkError      ret = kErrorOk;
     tCtrlFileType   fileType = kCtrlFileTypeFirmwareUpdate;
 
     printf("Transfer firmware update image to kernel stack with size %d...\n",
@@ -426,6 +455,50 @@ static tOplkError updateFirmwareImage(UINT8* pFwBuffer_p, INT length_p)
 
     printf("DONE!\n");
 
+    return ret;
+}
+
+//------------------------------------------------------------------------------
+/**
+\brief  Invalidate firmware image
+
+The function invalidates the update image by erasing the firmware header and
+instructs the firmware to reconfigure from factory image.
+
+\return The function returns the tOplkError error code.
+
+*/
+//------------------------------------------------------------------------------
+static tOplkError invalidateFirmwareImage(void)
+{
+    tOplkError      ret = kErrorOk;
+    tCtrlFileType   fileType = kCtrlFileTypeFirmwareUpdate;
+    UINT8*          pDummyFileBuff = malloc(FW_HEADER_SIZE);
+
+    // Clear the dummy file buffer 
+    memset(pDummyFileBuff, 0xFF, FW_HEADER_SIZE);
+
+    printf("Erasing the update image....\n");
+
+    ret = ctrlu_writeFileToKernel(fileType, FW_HEADER_SIZE, pDummyFileBuff);
+    if (ret != kErrorOk)
+    {
+        printf("ctrlu_writeFileToKernel() returned with 0x%X\n", ret);
+        return ret;
+    }
+
+    fileType = kCtrlFileTypeUnknown;
+
+    printf("Updating next image flag to boot from factory image...");
+    ret = ctrlu_setNextImageFlag(fileType);
+
+    if (ret != kErrorOk)
+    {
+        printf("Failed with error:0x%2X\n", ret);
+        return ret;
+    }
+
+    printf("DONE!\n");
     return ret;
 }
 
