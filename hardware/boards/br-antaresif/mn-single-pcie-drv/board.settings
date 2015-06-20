@@ -64,6 +64,8 @@ CFG_DUALPROCSHM=1
 # Type of POWERLINK node supported by this platform
 CFG_NODE=MN
 
-CFG_BOARD_CFLAGS="\
--D__BR_ANTARESIF__ \
-"
+# Driver Arguments
+CFG_PLATFORM_CFLAGS=-D__BR_OPLK_PCIe_IF__
+# Driver Interface Configuration
+CFG_DRV_BUS="PCIE BUS"
+
