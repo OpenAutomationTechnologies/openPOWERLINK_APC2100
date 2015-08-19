@@ -190,7 +190,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win8 Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\..\..\..\oplk\stack\include;..\..\..\..\..\..\oplk\stack\src\kernel\errhnd;..\..\..\proj\mn;..\..\..\..\..\..\oplk\drivers\windows\drv_ndis_pcie\;..\..\..\..\..\..\oplk\stack\src\common\circbuf;..\..\..\..\..\..\oplk\contrib\ndislib\ndispcie;..\..\..\..\..\..\oplk\contrib\dualprocshm\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\stack\include;..\..\..\..\..\stack\src\kernel\errhnd;..\..\proj\mn;..\..\;..\..\..\..\..\stack\src\common\circbuf;..\..\..\..\..\contrib\ndislib\ndispcie;..\..\..\..\..\contrib\dualprocshm\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_X86_=1;i386=1;STD_CALL;%(PreprocessorDefinitions);NDIS60</PreprocessorDefinitions>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
@@ -203,7 +203,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win7 Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\..\..\..\oplk\stack\include;..\..\..\..\..\..\oplk\stack\src\kernel\errhnd;..\..\..\proj\mn;..\..\..\..\..\..\oplk\drivers\windows\drv_ndis_pcie\;..\..\..\..\..\..\oplk\stack\src\common\circbuf;..\..\..\..\..\..\oplk\contrib\ndislib\ndispcie;..\..\..\..\..\..\oplk\contrib\dualprocshm\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\stack\include;..\..\..\..\..\stack\src\kernel\errhnd;..\..\proj\mn;..\..\;..\..\..\..\..\stack\src\common\circbuf;..\..\..\..\..\contrib\ndislib\ndispcie;..\..\..\..\..\contrib\dualprocshm\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_X86_=1;i386=1;STD_CALL;%(PreprocessorDefinitions);NDIS60</PreprocessorDefinitions>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
@@ -216,7 +216,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win7 Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\..\..\..\oplk\stack\include;..\..\..\..\..\..\oplk\stack\src\kernel\errhnd;..\..\..\proj\mn;..\..\..\..\..\..\oplk\drivers\windows\drv_ndis_pcie\;..\..\..\..\..\..\oplk\stack\src\common\circbuf;..\..\..\..\..\..\oplk\contrib\ndislib\ndispcie;..\..\..\..\..\..\oplk\contrib\dualprocshm\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\stack\include;..\..\..\..\..\stack\src\kernel\errhnd;..\..\proj\mn;..\..\;..\..\..\..\..\stack\src\common\circbuf;..\..\..\..\..\contrib\ndislib\ndispcie;..\..\..\..\..\contrib\dualprocshm\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_X86_=1;i386=1;STD_CALL;%(PreprocessorDefinitions);NDIS60</PreprocessorDefinitions>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
@@ -229,7 +229,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win8.1 Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\..\..\..\oplk\stack\include;..\..\..\..\..\..\oplk\stack\src\kernel\errhnd;..\..\..\proj\mn;..\..\..\..\..\..\oplk\drivers\windows\drv_ndis_pcie\;..\..\..\..\..\..\oplk\stack\src\common\circbuf;..\..\..\..\..\..\oplk\contrib\ndislib\ndispcie;..\..\..\..\..\..\oplk\contrib\dualprocshm\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\stack\include;..\..\..\..\..\stack\src\kernel\errhnd;..\..\proj\mn;..\..\;..\..\..\..\..\stack\src\common\circbuf;..\..\..\..\..\contrib\ndislib\ndispcie;..\..\..\..\..\contrib\dualprocshm\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_X86_=1;i386=1;STD_CALL;%(PreprocessorDefinitions);NDIS60</PreprocessorDefinitions>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
@@ -242,7 +242,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win8 Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\..\..\..\oplk\stack\include;..\..\..\..\..\..\oplk\stack\src\kernel\errhnd;..\..\..\proj\mn;..\..\..\..\..\..\oplk\drivers\windows\drv_ndis_pcie\;..\..\..\..\..\..\oplk\stack\src\common\circbuf;..\..\..\..\..\..\oplk\contrib\ndislib\ndispcie;..\..\..\..\..\..\oplk\contrib\dualprocshm\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\stack\include;..\..\..\..\..\stack\src\kernel\errhnd;..\..\proj\mn;..\..\;..\..\..\..\..\stack\src\common\circbuf;..\..\..\..\..\contrib\ndislib\ndispcie;..\..\..\..\..\contrib\dualprocshm\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_X86_=1;i386=1;STD_CALL;%(PreprocessorDefinitions);NDIS60</PreprocessorDefinitions>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
@@ -255,7 +255,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win8.1 Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\..\..\..\oplk\stack\include;..\..\..\..\..\..\oplk\stack\src\kernel\errhnd;..\..\..\proj\mn;..\..\..\..\..\..\oplk\drivers\windows\drv_ndis_pcie\;..\..\..\..\..\..\oplk\stack\src\common\circbuf;..\..\..\..\..\..\oplk\contrib\ndislib\ndispcie;..\..\..\..\..\..\oplk\contrib\dualprocshm\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\stack\include;..\..\..\..\..\stack\src\kernel\errhnd;..\..\proj\mn;..\..\;..\..\..\..\..\stack\src\common\circbuf;..\..\..\..\..\contrib\ndislib\ndispcie;..\..\..\..\..\contrib\dualprocshm\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_X86_=1;i386=1;STD_CALL;%(PreprocessorDefinitions);NDIS60</PreprocessorDefinitions>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
@@ -268,7 +268,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win8 Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\..\..\..\oplk\stack\include;..\..\..\..\..\..\oplk\stack\src\kernel\errhnd;..\..\..\proj\mn;..\..\..\..\..\..\oplk\drivers\windows\drv_ndis_pcie\;..\..\..\..\..\..\oplk\stack\src\common\circbuf;..\..\..\..\..\..\oplk\contrib\ndislib\ndispcie;..\..\..\..\..\..\oplk\contrib\dualprocshm\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\oplk\stack\include;..\..\..\..\..\oplk\stack\src\kernel\errhnd;..\..\proj\mn;..\..\..\..\..\oplk\drivers\windows\drv_ndis_pcie;..\..\..\..\..\oplk\stack\src\common\circbuf;..\..\..\..\..\oplk\contrib\ndislib\ndispcie;..\..\..\..\..\oplk\contrib\dualprocshm\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WIN64;_AMD64_;AMD64;%(PreprocessorDefinitions);NDIS60</PreprocessorDefinitions>
       <WarningLevel>Level3</WarningLevel>
       <TreatWarningAsError>false</TreatWarningAsError>
@@ -281,12 +281,12 @@
       <AdditionalDependencies>%(AdditionalDependencies);$(KernelBufferOverflowLib);$(DDK_LIB_PATH)\ntoskrnl.lib;$(DDK_LIB_PATH)\hal.lib;$(DDK_LIB_PATH)\wmilib.lib;$(DDK_LIB_PATH)\ndis.lib</AdditionalDependencies>
     </Link>
     <Inf>
-      <TimeStamp>2.1.1.0</TimeStamp>
+      <TimeStamp>2.3.0.0</TimeStamp>
     </Inf>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win7 Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\..\..\..\oplk\stack\include;..\..\..\..\..\..\oplk\stack\src\kernel\errhnd;..\..\..\proj\mn;..\..\..\..\..\..\oplk\drivers\windows\drv_ndis_pcie\;..\..\..\..\..\..\oplk\stack\src\common\circbuf;..\..\..\..\..\..\oplk\contrib\ndislib\ndispcie;..\..\..\..\..\..\oplk\contrib\dualprocshm\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\oplk\stack\include;..\..\..\..\..\oplk\stack\src\kernel\errhnd;..\..\proj\mn;..\..\..\..\..\oplk\drivers\windows\drv_ndis_pcie;..\..\..\..\..\oplk\stack\src\common\circbuf;..\..\..\..\..\oplk\contrib\ndislib\ndispcie;..\..\..\..\..\oplk\contrib\dualprocshm\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WIN64;_AMD64_;AMD64;%(PreprocessorDefinitions);NDIS60;CONFIG_PCP=FALSE</PreprocessorDefinitions>
       <WarningLevel>Level3</WarningLevel>
       <TreatWarningAsError>false</TreatWarningAsError>
@@ -304,13 +304,13 @@
       <AssemblyDebug>true</AssemblyDebug>
     </Link>
     <Inf>
-      <TimeStamp>2.2.0.0</TimeStamp>
+      <TimeStamp>2.3.0.0</TimeStamp>
       <SpecifyDriverVerDirectiveVersion>true</SpecifyDriverVerDirectiveVersion>
     </Inf>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win7 Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\..\..\..\oplk\stack\include;..\..\..\..\..\..\oplk\stack\src\kernel\errhnd;..\..\..\proj\mn;..\..\..\..\..\..\oplk\drivers\windows\drv_ndis_pcie\;..\..\..\..\..\..\oplk\stack\src\common\circbuf;..\..\..\..\..\..\oplk\contrib\ndislib\ndispcie;..\..\..\..\..\..\oplk\contrib\dualprocshm\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\oplk\stack\include;..\..\..\..\..\oplk\stack\src\kernel\errhnd;..\..\proj\mn;..\..\..\..\..\oplk\drivers\windows\drv_ndis_pcie;..\..\..\..\..\oplk\stack\src\common\circbuf;..\..\..\..\..\oplk\contrib\ndislib\ndispcie;..\..\..\..\..\oplk\contrib\dualprocshm\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WIN64;_AMD64_;AMD64;%(PreprocessorDefinitions);NDIS60;CONFIG_PCP=FALSE</PreprocessorDefinitions>
       <WarningLevel>Level3</WarningLevel>
       <TreatWarningAsError>false</TreatWarningAsError>
@@ -323,12 +323,12 @@
       <AdditionalDependencies>%(AdditionalDependencies);$(KernelBufferOverflowLib);$(DDK_LIB_PATH)\ntoskrnl.lib;$(DDK_LIB_PATH)\hal.lib;$(DDK_LIB_PATH)\wmilib.lib;$(DDK_LIB_PATH)\ndis.lib</AdditionalDependencies>
     </Link>
     <Inf>
-      <TimeStamp>2.1.1.0</TimeStamp>
+      <TimeStamp>2.3.0.0</TimeStamp>
     </Inf>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win8.1 Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\..\..\..\oplk\stack\include;..\..\..\..\..\..\oplk\stack\src\kernel\errhnd;..\..\..\proj\mn;..\..\..\..\..\..\oplk\drivers\windows\drv_ndis_pcie\;..\..\..\..\..\..\oplk\stack\src\common\circbuf;..\..\..\..\..\..\oplk\contrib\ndislib\ndispcie;..\..\..\..\..\..\oplk\contrib\dualprocshm\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\oplk\stack\include;..\..\..\..\..\oplk\stack\src\kernel\errhnd;..\..\proj\mn;..\..\..\..\..\oplk\drivers\windows\drv_ndis_pcie;..\..\..\..\..\oplk\stack\src\common\circbuf;..\..\..\..\..\oplk\contrib\ndislib\ndispcie;..\..\..\..\..\oplk\contrib\dualprocshm\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WIN64;_AMD64_;AMD64;%(PreprocessorDefinitions);NDIS60</PreprocessorDefinitions>
       <WarningLevel>Level3</WarningLevel>
       <TreatWarningAsError>false</TreatWarningAsError>
@@ -341,12 +341,12 @@
       <AdditionalDependencies>%(AdditionalDependencies);$(KernelBufferOverflowLib);$(DDK_LIB_PATH)\ntoskrnl.lib;$(DDK_LIB_PATH)\hal.lib;$(DDK_LIB_PATH)\wmilib.lib;$(DDK_LIB_PATH)\ndis.lib</AdditionalDependencies>
     </Link>
     <Inf>
-      <TimeStamp>2.1.1.0</TimeStamp>
+      <TimeStamp>2.3.0.0</TimeStamp>
     </Inf>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win8 Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\..\..\..\oplk\stack\include;..\..\..\..\..\..\oplk\stack\src\kernel\errhnd;..\..\..\proj\mn;..\..\..\..\..\..\oplk\drivers\windows\drv_ndis_pcie\;..\..\..\..\..\..\oplk\stack\src\common\circbuf;..\..\..\..\..\..\oplk\contrib\ndislib\ndispcie;..\..\..\..\..\..\oplk\contrib\dualprocshm\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\oplk\stack\include;..\..\..\..\..\oplk\stack\src\kernel\errhnd;..\..\proj\mn;..\..\..\..\..\oplk\drivers\windows\drv_ndis_pcie;..\..\..\..\..\oplk\stack\src\common\circbuf;..\..\..\..\..\oplk\contrib\ndislib\ndispcie;..\..\..\..\..\oplk\contrib\dualprocshm\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WIN64;_AMD64_;AMD64;%(PreprocessorDefinitions);NDIS60</PreprocessorDefinitions>
       <WarningLevel>Level3</WarningLevel>
       <TreatWarningAsError>false</TreatWarningAsError>
@@ -359,12 +359,12 @@
       <AdditionalDependencies>%(AdditionalDependencies);$(KernelBufferOverflowLib);$(DDK_LIB_PATH)\ntoskrnl.lib;$(DDK_LIB_PATH)\hal.lib;$(DDK_LIB_PATH)\wmilib.lib;$(DDK_LIB_PATH)\ndis.lib</AdditionalDependencies>
     </Link>
     <Inf>
-      <TimeStamp>2.1.1.0</TimeStamp>
+      <TimeStamp>2.3.0.0</TimeStamp>
     </Inf>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Win8.1 Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\..\..\..\oplk\stack\include;..\..\..\..\..\..\oplk\stack\src\kernel\errhnd;..\..\..\proj\mn;..\..\..\..\..\..\oplk\drivers\windows\drv_ndis_pcie\;..\..\..\..\..\..\oplk\stack\src\common\circbuf;..\..\..\..\..\..\oplk\contrib\ndislib\ndispcie;..\..\..\..\..\..\oplk\contrib\dualprocshm\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\..\oplk\stack\include;..\..\..\..\..\oplk\stack\src\kernel\errhnd;..\..\proj\mn;..\..\..\..\..\oplk\drivers\windows\drv_ndis_pcie;..\..\..\..\..\oplk\stack\src\common\circbuf;..\..\..\..\..\oplk\contrib\ndislib\ndispcie;..\..\..\..\..\oplk\contrib\dualprocshm\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WIN64;_AMD64_;AMD64;%(PreprocessorDefinitions);NDIS60</PreprocessorDefinitions>
       <WarningLevel>Level3</WarningLevel>
       <TreatWarningAsError>false</TreatWarningAsError>
@@ -377,7 +377,7 @@
       <AdditionalDependencies>%(AdditionalDependencies);$(KernelBufferOverflowLib);$(DDK_LIB_PATH)\ntoskrnl.lib;$(DDK_LIB_PATH)\hal.lib;$(DDK_LIB_PATH)\wmilib.lib;$(DDK_LIB_PATH)\ndis.lib</AdditionalDependencies>
     </Link>
     <Inf>
-      <TimeStamp>2.1.1.0</TimeStamp>
+      <TimeStamp>2.3.0.0</TimeStamp>
     </Inf>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -387,20 +387,7 @@
     <FilesToPackage Include="$(TargetPath)" />
     <FilesToPackage Include="@(Inf->'%(CopyOutput)')" Condition="'@(Inf)'!=''" />
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\..\oplk\contrib\dualprocshm\src\dualprocshm-intr.c" />
-    <ClCompile Include="..\..\..\..\..\..\oplk\contrib\dualprocshm\src\dualprocshm-noos.c" />
-    <ClCompile Include="..\..\..\..\..\..\oplk\contrib\dualprocshm\src\dualprocshm-pci.c" />
-    <ClCompile Include="..\..\..\..\..\..\oplk\contrib\ndislib\ndispcie\ndis_pcie.c" />
-    <ClCompile Include="..\..\..\..\..\..\oplk\contrib\ndislib\ndispcie\ndis_pcieMiniport.c" />
-    <ClCompile Include="..\..\..\..\..\..\oplk\drivers\windows\drv_ndis_pcie\drvintf.c" />
-    <ClCompile Include="..\..\..\..\..\..\oplk\drivers\windows\drv_ndis_pcie\main.c" />
-    <ClCompile Include="..\..\..\..\..\..\oplk\stack\src\arch\winkernel\target-winkernel.c" />
-    <ClCompile Include="..\..\..\..\..\..\oplk\stack\src\common\ami\amix86.c" />
-    <ClCompile Include="..\..\..\..\..\..\oplk\stack\src\common\circbuf\circbuf-noosdual.c" />
-    <ClCompile Include="..\..\..\..\..\..\oplk\stack\src\common\circbuf\circbuffer.c" />
-    <ClCompile Include="..\..\..\..\..\..\oplk\stack\src\common\debugstr.c" />
-  </ItemGroup>
+  <Import Project="sources.targets" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

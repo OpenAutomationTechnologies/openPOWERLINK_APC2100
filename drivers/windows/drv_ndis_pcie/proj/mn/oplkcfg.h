@@ -2,15 +2,14 @@
 ********************************************************************************
 \file   oplkcfg.h
 
-\brief  Configuration options for openPOWERLINK MN kernel module
+\brief  Configuration options for openPOWERLINK MN PCIe kernel driver
 
-This file contains the configuration options for the openPOWERLINK kernel module
+This file contains the configuration options for the openPOWERLINK kernel PCIe
+interface module.
 
 *******************************************************************************/
 
 /*------------------------------------------------------------------------------
-Copyright (c) 2012, SYSTEC electronik GmbH
-Copyright (c) 2014, Bernecker+Rainer Industrie-Elektronik Ges.m.b.H. (B&R)
 Copyright (c) 2015, Kalycito Infotech Private Limited
 All rights reserved.
 
@@ -49,8 +48,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef DEF_DEBUG_LVL
 #define DEF_DEBUG_LVL                               (0xC00000000L)
 #endif
-
-#define DEBUG_CIRCBUF_SIZE_CHECK
 
 #endif // _INC_oplkcfg_H_
 
