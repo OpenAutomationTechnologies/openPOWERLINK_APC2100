@@ -108,7 +108,6 @@ static void shtdPlk(void);
 static void bgtPlk(void);
 static BOOL ctrlCommandExecCb(tCtrlCmdType cmd_p, UINT16* pRet_p, UINT16* pStatus_p,
                               BOOL* pfExit_p);
-static tOplkError writeUpdateImage(tCtrlDataChunk* pDataChunk_p);
 static tOplkError setNextReconfigFirmware(tFirmwareImageType imageType_p);
 static tOplkError checkUpdateImage(void);
 static tOplkError getMacAddress(UINT8* pMacAddr_p);
@@ -324,7 +323,6 @@ static BOOL ctrlCommandExecCb(tCtrlCmdType cmd_p, UINT16* pRet_p, UINT16* pStatu
     tOplkError      retVal = kErrorOk;
     UINT16          status = kCtrlStatusUnchanged;
     BOOL            fExit = FALSE;
-    tCtrlDataChunk  dataChunk;
 
     switch (cmd_p)
     {
@@ -382,36 +380,6 @@ static BOOL ctrlCommandExecCb(tCtrlCmdType cmd_p, UINT16* pRet_p, UINT16* pStatu
 
             break;
 
-        case kCtrlWriteFile:
-            retVal = ctrlk_getFileTransferChunk(&dataChunk);
-            if (retVal != kErrorOk)
-            {
-                *pRet_p = (UINT16)retVal;
-                fExit = TRUE;
-                break;
-            }
-
-            if (dataChunk.fileType == kCtrlFileTypeFirmwareUpdate)
-                retVal = writeUpdateImage(&dataChunk);
-            else
-                retVal = kErrorGeneralError;
-
-            *pRet_p = (UINT16)retVal;
-            fExit = FALSE;
-            break;
-
-        case kCtrlSetKernelFactoryImage:
-            retVal = setNextReconfigFirmware(kFirmwareImageFactory);
-            *pRet_p = (UINT16)retVal;
-            fExit = FALSE;
-            break;
-
-        case kCtrlSetKernelUpdateImage:
-            retVal = setNextReconfigFirmware(kFirmwareImageUpdate);
-            *pRet_p = (UINT16)retVal;
-            fExit = FALSE;
-            break;
-
         default:
             return FALSE; // Command execution not implemented
     }
@@ -423,85 +391,6 @@ static BOOL ctrlCommandExecCb(tCtrlCmdType cmd_p, UINT16* pRet_p, UINT16* pStatu
         *pfExit_p = fExit;
 
     return TRUE;
-}
-
-//------------------------------------------------------------------------------
-/**
-\brief    Write update image chunk to flash
-
-This function writes the update image data chunk to the flash. The provided
-data chunk has to be read from the ctrl module's transfer buffer.
-
-\param  pDataChunk_p        Data chunk information
-
-\return This function returns tOplkError error codes.
-*/
-//------------------------------------------------------------------------------
-static tOplkError writeUpdateImage(tCtrlDataChunk* pDataChunk_p)
-{
-    tOplkError          ret;
-    int                 retFlash;
-    tFlashInfo*         pFlashInfo = &drvInstance_l.flashInfo;
-    UINT32              updateImageOffset = firmware_getImageBase(kFirmwareImageUpdate);
-    UINT32              writeOffset;
-    UINT8               aBuffer[CTRL_FILETRANSFER_SIZE];
-
-    if (pDataChunk_p->length > sizeof(aBuffer))
-        return kErrorNoResource;
-
-    ret = ctrlk_readFileTransfer(sizeof(aBuffer), aBuffer);
-    if (ret != kErrorOk)
-        return ret;
-
-    // Check start condition
-    if (pDataChunk_p->fStart && (pDataChunk_p->offset != 0))
-        return kErrorInvalidOperation;
-
-    // Get offset within flash
-    writeOffset = updateImageOffset + pDataChunk_p->offset;
-
-    // Check if continuous write is done
-    if (!pDataChunk_p->fStart && (writeOffset != drvInstance_l.writeOffset))
-        return kErrorInvalidOperation; // Command skips some data, shouldn't be!
-
-    // Check if write exceeds flash size
-    if ((writeOffset + pDataChunk_p->length) > pFlashInfo->size)
-        return kErrorGeneralError; // Image exceeds flash size!
-
-    // Handle start
-    if (pDataChunk_p->fStart)
-    {
-        // Reset write pointer
-        drvInstance_l.writeOffset = writeOffset;
-
-        // Erase first sector
-        retFlash = flash_eraseSector(updateImageOffset);
-        if (retFlash != 0)
-            return kErrorGeneralError;
-
-        // Set next sector to be erased
-        drvInstance_l.writeEraseOffset = updateImageOffset + pFlashInfo->sectorSize;
-    }
-
-    // Handle sector boundary crossing
-    if ((writeOffset + pDataChunk_p->length) > drvInstance_l.writeEraseOffset)
-    {
-        // Chunk exceeds current sector => erase next sector
-        if (flash_eraseSector(drvInstance_l.writeEraseOffset) != 0)
-            return kErrorGeneralError;
-
-        drvInstance_l.writeEraseOffset += pFlashInfo->sectorSize;
-    }
-
-    // Forward data to flash
-    retFlash = flash_write(drvInstance_l.writeOffset, aBuffer, pDataChunk_p->length);
-    if (retFlash != 0)
-        return kErrorGeneralError;
-
-    // At this point data is forwarded to the flash
-    drvInstance_l.writeOffset += pDataChunk_p->length;
-
-    return kErrorOk;
 }
 
 //------------------------------------------------------------------------------
