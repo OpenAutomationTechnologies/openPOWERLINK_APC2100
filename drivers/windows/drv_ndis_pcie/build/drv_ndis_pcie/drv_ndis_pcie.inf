@@ -53,7 +53,7 @@ ExcludeFromSelect = *
 [OPLK.NT$ARCH$]
 ; DisplayName                 Section             DeviceID
 ; -----------                 -------             --------
-%OPLK.DevDesc%              = OPLK.fpga_pcie,      PCI\VEN_1172&DEV_E001     ; Terasic DE2i-150
+%OPLK.DevDesc%              = OPLK.fpga_pcie,      PCI\VEN_1677&DEV_E809     ; openPOWERLINK Interface for B&R APC/PPC2100
 
 [OPLK.fpga_pcie]
 Characteristics = 0x84 ; NCF_HAS_UI | NCF_PHYSICAL
