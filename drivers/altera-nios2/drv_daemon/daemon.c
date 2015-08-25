@@ -92,7 +92,8 @@ typedef struct
     UINT32              writeEraseOffset;   ///< Current flash erase offset
     tFirmwareImageType  nextImage;          ///< Next firmware image to be configured
     BOOL                fStackInitialized;  ///< Stack is initialized
-
+    size_t              fileChunkBufferSize; ///< Size of file chunk buffer
+    UINT8*              pFileChunkBuffer;   ///< Buffer for file chunk transfer
 } tDrvInstance;
 
 //------------------------------------------------------------------------------
@@ -108,6 +109,7 @@ static void shtdPlk(void);
 static void bgtPlk(void);
 static BOOL ctrlCommandExecCb(tCtrlCmdType cmd_p, UINT16* pRet_p, UINT16* pStatus_p,
                               BOOL* pfExit_p);
+static tOplkError writeFileChunk(void);
 static tOplkError setNextReconfigFirmware(tFirmwareImageType imageType_p);
 static tOplkError checkUpdateImage(void);
 static tOplkError getMacAddress(UINT8* pMacAddr_p);
@@ -250,12 +252,22 @@ static tOplkError initPlk(void)
 {
     tOplkError ret;
 
+
     ret = ctrlk_init(ctrlCommandExecCb);
 
     if (ret != kErrorOk)
     {
         PRINTF("Could not initialize control module\n");
         goto Exit;
+    }
+
+    drvInstance_l.fileChunkBufferSize = ctrlkcal_getMaxFileChunkSize();
+
+    if (drvInstance_l.fileChunkBufferSize > 0)
+    {
+        drvInstance_l.pFileChunkBuffer = OPLK_MALLOC(drvInstance_l.fileChunkBufferSize);
+        if (drvInstance_l.pFileChunkBuffer == NULL)
+            ret = kErrorNoResource;
     }
 
 Exit:
@@ -273,6 +285,8 @@ This function shuts down the communication stack.
 static void shtdPlk(void)
 {
     ctrlk_exit();
+    OPLK_FREE(drvInstance_l.pFileChunkBuffer);
+    drvInstance_l.pFileChunkBuffer = NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -380,6 +394,12 @@ static BOOL ctrlCommandExecCb(tCtrlCmdType cmd_p, UINT16* pRet_p, UINT16* pStatu
 
             break;
 
+        case kCtrlWriteFileChunk:
+            *pRet_p = writeFileChunk();
+            status = kCtrlStatusUnchanged;
+            fExit = FALSE;
+            break;
+
         default:
             return FALSE; // Command execution not implemented
     }
@@ -391,6 +411,81 @@ static BOOL ctrlCommandExecCb(tCtrlCmdType cmd_p, UINT16* pRet_p, UINT16* pStatu
         *pfExit_p = fExit;
 
     return TRUE;
+}
+
+//------------------------------------------------------------------------------
+/**
+\brief  Write file chunk
+
+This function handles the kCtrlWriteFileChunk command. It reads the file chunk
+buffer and writes the data to the firmware update region in flash.
+
+\return This function returns tOplkError error codes.
+*/
+//------------------------------------------------------------------------------
+static tOplkError writeFileChunk(void)
+{
+    tOplkError          ret;
+    INT                 retflash;
+    tFlashInfo*         pFlashInfo = &drvInstance_l.flashInfo;
+    UINT32              updateImageOffset = firmware_getImageBase(kFirmwareImageUpdate);
+    UINT32              writeOffset;
+    tOplkFileChunkDesc  fileChunkDesc;
+
+    ret = ctrlk_readFileChunk(&fileChunkDesc, drvInstance_l.fileChunkBufferSize,
+                              drvInstance_l.pFileChunkBuffer);
+    if (ret != kErrorOk)
+        return ret;
+
+    // Check if the transfer starts correctly
+    if (fileChunkDesc.fFirst && fileChunkDesc.offset != 0)
+        return kErrorInvalidOperation;
+
+    // Get write offset within flash
+    writeOffset = updateImageOffset + fileChunkDesc.offset;
+
+    // Check if write is done continuously
+    if (!fileChunkDesc.fFirst && writeOffset != drvInstance_l.writeOffset)
+        return kErrorInvalidOperation;
+
+    // Check if write exceeds flash size
+    if ((writeOffset + fileChunkDesc.length) > pFlashInfo->size)
+        return kErrorNoResource;
+
+    // Handle first transfer
+    if (fileChunkDesc.fFirst)
+    {
+        // Reset write pointer
+        drvInstance_l.writeOffset = writeOffset;
+
+        // Erase first sector
+        retflash = flash_eraseSector(updateImageOffset);
+        if (retflash != 0)
+            return kErrorGeneralError;
+
+        // Set next sector to be erased
+        drvInstance_l.writeEraseOffset = updateImageOffset + pFlashInfo->sectorSize;
+    }
+
+    // Handle sector boundary xing
+    if ((writeOffset + fileChunkDesc.length) > drvInstance_l.writeEraseOffset)
+    {
+        // Chunk exceeds current sector -> erase next sector
+        if (flash_eraseSector(drvInstance_l.writeEraseOffset) != 0)
+            return kErrorGeneralError;
+
+        drvInstance_l.writeEraseOffset += pFlashInfo->sectorSize;
+    }
+
+    // Forward data to flash
+    retflash = flash_write(drvInstance_l.writeOffset, drvInstance_l.pFileChunkBuffer,
+                           fileChunkDesc.length);
+    if (retflash != 0)
+        return kErrorGeneralError;
+
+    drvInstance_l.writeOffset += fileChunkDesc.length;
+
+    return kErrorOk;
 }
 
 //------------------------------------------------------------------------------
