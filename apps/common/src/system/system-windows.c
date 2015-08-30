@@ -203,12 +203,12 @@ void system_startSyncThread(tSyncCb pfnSync_p)
     syncThreadInstance_l.pfnSyncCb = pfnSync_p;
 
     syncThreadInstance_l.hSyncThreadHandle = CreateThread(NULL,          // Default security attributes
-                                                         0,             // Use Default stack size
-                                                         syncThread,    // Thread routine
-                                                         NULL,          // Argument to the thread routine
-                                                         0,             // Use default creation flags
-                                                         NULL           // Returned thread Id
-                                                         );
+                                                          0,             // Use Default stack size
+                                                          syncThread,    // Thread routine
+                                                          NULL,          // Argument to the thread routine
+                                                          0,             // Use default creation flags
+                                                          NULL           // Returned thread Id
+                                                          );
 }
 
 //------------------------------------------------------------------------------
@@ -223,7 +223,10 @@ The function stops the thread used for synchronous data handling.
 void system_stopSyncThread(void)
 {
     CancelIoEx(syncThreadInstance_l.hSyncThreadHandle, NULL);
+
+    // Signal to stop the thread and wait for the thread to terminate
     syncThreadInstance_l.fThreadExit = TRUE;
+    WaitForSingleObject(syncThreadInstance_l.hSyncThreadHandle, 1000);
 }
 #endif
 
