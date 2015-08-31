@@ -18,7 +18,7 @@
    VIProductVersion 1.0.0.0
    VIAddVersionKey ProductName "openPOWERLINK PCIe driver"
    VIAddVersionKey CompanyName "Bernecker + Rainer Industrie-Elektronik Ges.m.b.H"
-   VIAddVersionKey ProductVersion 2.1.0.0
+   VIAddVersionKey ProductVersion 2.3.0.0
    VIAddVersionKey FileDescription "openPOWERLINK PCIe interface driver installer"
   ;Default installation folder
    InstallDir "$PROGRAMFILES\openPOWERLINK PCIe Driver"
@@ -66,7 +66,7 @@ Section "PCIe Driver" section1
 ;Create directories in program files.
     WriteRegStr HKCU "Software\openPOWERLINK PCIe Driver" "" "$INSTDIR"
     SetOutPath "$INSTDIR\Driver"
-    File  /r "..\..\..\bin\windows\amd64\drv_ndis_pcie Package\*.*"
+    File  /r "..\..\..\bin\windows\amd64\drv_ndis_pcie_package\*.*"
     File  /r "..\..\..\oplk\bin\windows\amd64\installer-pcie\*.*"
     File  /r "..\..\..\oplk\bin\windows\amd64\uninstaller-pcie\*.*"
     SetOutPath "$INSTDIR\Temp"
