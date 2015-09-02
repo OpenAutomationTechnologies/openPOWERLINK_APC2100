@@ -400,6 +400,20 @@ static BOOL ctrlCommandExecCb(tCtrlCmdType cmd_p, UINT16* pRet_p, UINT16* pStatu
             fExit = FALSE;
             break;
 
+        case kCtrlReconfigFactoryImage:
+            retVal = setNextReconfigFirmware(kFirmwareImageFactory);
+            *pRet_p = (UINT16)retVal;
+            status = kCtrlStatusUnchanged;
+            fExit = (retVal == kErrorOk); // Shutdown if image is okay
+            break;
+
+        case kCtrlReconfigUpdateImage:
+            retVal = setNextReconfigFirmware(kFirmwareImageUpdate);
+            *pRet_p = (UINT16)retVal;
+            status = kCtrlStatusUnchanged;
+            fExit = (retVal == kErrorOk); // Shutdown if image is okay
+            break;
+
         default:
             return FALSE; // Command execution not implemented
     }
