@@ -3,6 +3,7 @@
 # CMake file of APC/PPC2100 firmware update tool
 #
 # Copyright (c) 2015, Kalycito Infotech Private Limited
+# Copyright (c) 2015, Bernecker+Rainer Industrie-Elektronik Ges.m.b.H. (B&R)
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,27 +32,28 @@
 ################################################################################
 # Setup project and generic options
 
-PROJECT(fwupdate_tool C)
-MESSAGE(STATUS "Configuring fwupdate_tool")
+PROJECT(firmware_update C)
+MESSAGE(STATUS "Configuring firmware_update")
 
 CMAKE_MINIMUM_REQUIRED (VERSION 2.8.7)
 
 INCLUDE(../common/cmake/options.cmake)
 
+################################################################################
+# Setup project files and definitions
+
+SET(OBJDICT CiA302-4_MN)            # Set object dictionary to use
+FIND_OPLK_LIBRARY("mn")             # Find suitable openPOWERLINK library
+
 # Set generic sources and include directories for this demo
 SET(DEMO_SOURCES
     ${DEMO_SOURCE_DIR}/main.c
-    ${DEMO_SOURCE_DIR}/ctrlu.c
     ${CONTRIB_SOURCE_DIR}/console/printlog.c
     ${CONTRIB_SOURCE_DIR}/getopt/getopt.c
-    ${OPLK_ROOT_DIR}/stack/src/user/ctrl/ctrlucal-winioctl.c
-    ${OPLK_ROOT_DIR}/stack/src/common/debugstr.c
     )
 
 INCLUDE_DIRECTORIES(
     ${DEMO_SOURCE_DIR}
-    ${OPLK_INCLUDE_DIR}
-    ${OPLK_ROOT_DIR}/stack/proj/windows/liboplkmnapp-pcieintf
     )
 
 ADD_DEFINITIONS(-DCONFIG_MN)
@@ -77,22 +79,18 @@ SOURCE_GROUP("Architecture Specific Sources" FILES ${DEMO_ARCH_SOURCES})
 ################################################################################
 # Set the executable
 
-ADD_EXECUTABLE(fwupdate_tool ${DEMO_SOURCES} ${DEMO_ARCH_SOURCES} ${CMAKE_BINARY_DIR}/image.bin)
-SET_PROPERTY(TARGET fwupdate_tool
+ADD_EXECUTABLE(firmware_update ${DEMO_SOURCES} ${DEMO_ARCH_SOURCES})
+SET_PROPERTY(TARGET firmware_update
              PROPERTY COMPILE_DEFINITIONS_DEBUG DEBUG;DEF_DEBUG_LVL=${CFG_DEBUG_LVL})
-
-ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_BINARY_DIR}/image.bin
-                   COMMAND ${CMAKE_COMMAND} -E copy ${DEMO_SOURCE_DIR}/image.bin ${CMAKE_BINARY_DIR}/image.bin
-                   DEPENDS ${DEMO_SOURCE_DIR}/image.bin
-                   VERBATIM
-                   )
 
 ################################################################################
 # Libraries to link
-TARGET_LINK_LIBRARIES(fwupdate_tool ${ARCH_LIBRARIES})
+
+TARGET_LINK_LIBRARIES(firmware_update optimized ${OPLKLIB} debug ${OPLKLIB_DEBUG})
+TARGET_LINK_LIBRARIES(firmware_update ${ARCH_LIBRARIES})
 
 ################################################################################
 # Installation rules
 
-INSTALL(TARGETS fwupdate_tool RUNTIME DESTINATION ${CMAKE_PROJECT_NAME})
-INSTALL(FILES ${CMAKE_BINARY_DIR}/image.bin DESTINATION ${CMAKE_PROJECT_NAME})
+INSTALL(TARGETS firmware_update RUNTIME DESTINATION ${CMAKE_PROJECT_NAME})
+INSTALL(FILES src/image.bin DESTINATION ${CMAKE_PROJECT_NAME})

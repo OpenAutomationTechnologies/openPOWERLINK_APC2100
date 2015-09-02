@@ -3,6 +3,7 @@
 # Windows definitions for firmware update tool.
 #
 # Copyright (c) 2015, Kalycito Infotech Private Limited
+# Copyright (c) 2015, Bernecker+Rainer Industrie-Elektronik Ges.m.b.H. (B&R)
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,7 +41,23 @@ SET (DEMO_ARCH_SOURCES
      ${DEMO_ARCHSOURCES}
      ${COMMON_SOURCE_DIR}/system/system-windows.c
      ${CONTRIB_SOURCE_DIR}/console/console-windows.c
-     ${OPLK_ROOT_DIR}/stack/src/arch/windows/target-windows.c
-     ${OPLK_ROOT_DIR}/contrib/trace/trace-windows.c
      )
 
+################################################################################
+# Set architecture specific libraries
+
+################################################################################
+# Set architecture specific installation files
+IF(NOT (${OPLKDLL} STREQUAL "OPLKDLL-NOTFOUND"))
+    INSTALL(FILES ${OPLKDLL}
+            DESTINATION ${CMAKE_PROJECT_NAME}
+            CONFIGURATIONS "Release"
+            )
+ENDIF()
+
+IF(NOT (${OPLKDLL_DEBUG} STREQUAL "OPLKDLL_DEBUG-NOTFOUND"))
+    INSTALL(FILES ${OPLKDLL_DEBUG}
+            DESTINATION ${CMAKE_PROJECT_NAME}
+            CONFIGURATIONS "Debug"
+            )
+ENDIF()
