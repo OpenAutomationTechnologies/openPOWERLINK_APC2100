@@ -41,14 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // includes
 //------------------------------------------------------------------------------
 #include <stdio.h>
-#include <io.h>
 #include <stdlib.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/utime.h>
-#include <sys/timeb.h>
-#include <time.h>
-#include <direct.h>
 #include <string.h>
 
 #include <oplk/oplk.h>
@@ -91,7 +84,6 @@ typedef struct
     char    firmwareFile[256];
     BOOL    fUpdateImage;
     BOOL    fInvalidateUpdateImage;
-    BOOL    fIgnoreMismatch;
     BOOL    fFactoryReset;
     BOOL    fUpdateReset;
 } tOptions;
@@ -130,8 +122,6 @@ int main(int argc, char** argv)
 {
     tOplkError  ret;
     tOptions    opts;
-    UINT32      version;
-    UINT32      feature;
 
     memset(&opts, 0, sizeof(tOptions));
 
@@ -151,32 +141,12 @@ int main(int argc, char** argv)
     printf("for openPOWERLINK Stack: %s\n", oplk_getVersionString());
     printf("----------------------------------------------------\n");
 
-    ret = oplk_serviceInit(opts.fIgnoreMismatch);
-    if (ret == kErrorFeatureMismatch)
-    {
-        printf("Failed to initialize OPLK service module because of version mismatch!\n"
-               "Run with \"-i\" option to force mismatch ignoring.");
-        goto Exit;
-    }
-    else
-    {
-        if (ret != kErrorOk)
-        {
-            printf("Failed to initialize OPLK service module (ret = 0x%X)!\n", ret);
-            goto Exit;
-        }
-    }
-
-    ret = oplk_serviceGetKernelInfo(&version, &feature);
+    ret = oplk_initialize();
     if (ret != kErrorOk)
     {
-        printf("Failed to get kernel infos (ret = 0x%X)!\n", ret);
+        printf("Failed to initialize openPOWERLINK (ret = 0x%X)!\n", ret);
         goto Exit;
     }
-
-    printf("Kernel layer information...\n");
-    printf(" VERSION : 0x%08X\n", version);
-    printf(" FEATURE : 0x%08X\n", feature);
 
     if (opts.fInvalidateUpdateImage)
     {
@@ -184,7 +154,7 @@ int main(int argc, char** argv)
         if (ret != kErrorOk)
         {
             printf("Failed to invalidate image (ret = 0x%X)!\n", ret);
-            oplk_serviceExit();
+            oplk_exit();
             goto Exit;
         }
     }
@@ -195,7 +165,7 @@ int main(int argc, char** argv)
         if (ret != kErrorOk)
         {
             printf("Failed to update image (ret = 0x%X)!\n", ret);
-            oplk_serviceExit();
+            oplk_exit();
             goto Exit;
         }
     }
@@ -209,14 +179,14 @@ int main(int argc, char** argv)
         if (ret != kErrorOk)
         {
             printf("Failed to execute firmware reconfiguration (ret = 0x%X)!\n", ret);
-            oplk_serviceExit();
+            oplk_exit();
             goto Exit;
         }
 
         printf("Done\n");
     }
 
-    oplk_serviceExit();
+    oplk_exit();
 
 Exit:
     system_exit();
@@ -251,7 +221,7 @@ static int getOptions(int argc_p, char** argv_p, tOptions* pOpts_p)
     int opt;
 
     /* get command line parameters */
-    while ((opt = getopt(argc_p, argv_p, "d:eifu")) != -1)
+    while ((opt = getopt(argc_p, argv_p, "d:efu")) != -1)
     {
         switch (opt)
         {
@@ -264,17 +234,13 @@ static int getOptions(int argc_p, char** argv_p, tOptions* pOpts_p)
                 pOpts_p->fInvalidateUpdateImage = TRUE;
                 break;
 
-            case 'i':
-                pOpts_p->fIgnoreMismatch = TRUE;
-                break;
-
             case 'f':
                 pOpts_p->fFactoryReset = TRUE;
                 pOpts_p->fUpdateReset = FALSE; // falsify if also -u is given
                 break;
 
             case 'u':
-                pOpts_p->fFactoryReset = FALSE; // falsify if also -r is given
+                pOpts_p->fFactoryReset = FALSE; // falsify if also -f is given
                 pOpts_p->fUpdateReset = TRUE;
                 break;
 
@@ -282,7 +248,6 @@ static int getOptions(int argc_p, char** argv_p, tOptions* pOpts_p)
                 printf("Usage: %s [COMMAND] \n"
                        "-d <UPDATE_IMAGE>: Download update image to IF card\n"
                        "-e : Invalidate the existing update image\n"
-                       "-i : Ignore version and feature mismatch\n"
                        "-f : Reset to factory image\n"
                        "-u : Reset to update image\n",
                        argv_p[0]);
@@ -392,10 +357,10 @@ The function writes the given image to the kernel stack by creating chunks.
 //------------------------------------------------------------------------------
 static tOplkError writeImageToKernel(UINT8* pImage_p, UINT length_p)
 {
-    tOplkError          ret = kErrorOk;
-    tOplkFileChunkDesc  desc;
-    UINT8*              pChunk;
-    size_t              chunkSize = oplk_serviceGetFileChunkSize();
+    tOplkError              ret = kErrorOk;
+    tOplkApiFileChunkDesc   desc;
+    UINT8*                  pChunk;
+    size_t                  chunkSize = oplk_serviceGetFileChunkSize();
 
     if (chunkSize == 0)
     {
