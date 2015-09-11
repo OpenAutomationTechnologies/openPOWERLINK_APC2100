@@ -240,10 +240,17 @@ static tOplkError initPowerlink(UINT32 cycleLen_p, char* pszCdcFileName_p,
 #endif
 
     // initialize POWERLINK stack
-    ret = oplk_init(&initParam);
+    ret = oplk_initialize();
     if (ret != kErrorOk)
     {
-        fprintf(stderr, "oplk_init() failed with \"%s\" (0x%04x)\n", debugstr_getRetValStr(ret), ret);
+        printf("Failed to initialize openPOWERLINK (ret = 0x%X)!\n", ret);
+        return ret;
+    }
+
+    ret = oplk_create(&initParam);
+    if (ret != kErrorOk)
+    {
+        fprintf(stderr, "oplk_create() failed with \"%s\" (0x%04x)\n", debugstr_getRetValStr(ret), ret);
         return ret;
     }
 
@@ -383,7 +390,7 @@ static void shutdownPowerlink(void)
     }
 
     printf("Stack is in state off ... Shutdown\n");
-    oplk_shutdown();
+    oplk_exit();
 }
 
 //------------------------------------------------------------------------------
