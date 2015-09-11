@@ -1,4 +1,3 @@
 [submodule "oplk"]
 	path = oplk
-	url = https://github.com/zelenkaj/openPOWERLINK_V2
-	branch = feature-pcie
+	url = https://github.com/openPOWERLINK/openPOWERLINK_V2
