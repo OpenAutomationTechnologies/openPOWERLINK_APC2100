@@ -181,7 +181,7 @@ architecture rtl of toplevel is
             host_benchmark_pio_export                   : out   std_logic_vector(7 downto 0);
             pcp_0_cpu_resetrequest_resetrequest         : in    std_logic;
             pcp_0_cpu_resetrequest_resettaken           : out   std_logic;
-            status_led_pio_export                       : out   std_logic_vector(1 downto 0);
+            pcp_0_powerlink_led_export                  : out   std_logic_vector(1 downto 0);
             testport_pio_export                         : out   std_logic_vector(7 downto 0)
         );
     end component mnSinglePcieDrv;
@@ -330,7 +330,7 @@ begin
             pcie_powerdown_gxb_powerdown            => cInactivated,
             pcie_test_out_test_out                  => open,
             host_benchmark_pio_export               => open,
-            status_led_pio_export                   => plkSeLed,
+            pcp_0_powerlink_led_export              => plkSeLed,
             testport_pio_export                     => testport
         );
 
