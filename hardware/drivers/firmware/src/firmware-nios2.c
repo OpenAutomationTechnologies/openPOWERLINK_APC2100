@@ -382,7 +382,7 @@ int firmware_checkHeader(tFirmwareHeader* pHeader_p)
         return -1;
 
     // Check header CRC
-    firmware_calcCrc(&crcval, pHeader_p, sizeof(tFirmwareHeader) - 4);
+    firmware_calcCrc(&crcval, (UINT8*)pHeader_p, sizeof(tFirmwareHeader) - 4);
     if (crcval != pHeader_p->headerCrc)
         return -1;
 
@@ -410,7 +410,7 @@ int firmware_checkDeviceHeader(tFirmwareDeviceHeader* pHeader_p)
         return -1;
 
     // Check header CRC
-    firmware_calcCrc(&crcval, pHeader_p, sizeof(tFirmwareDeviceHeader) - 4);
+    firmware_calcCrc(&crcval, (UINT8*)pHeader_p, sizeof(tFirmwareDeviceHeader) - 4);
     if (crcval != pHeader_p->headerCrc)
         return -1;
 

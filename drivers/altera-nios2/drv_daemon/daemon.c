@@ -439,12 +439,12 @@ buffer and writes the data to the firmware update region in flash.
 //------------------------------------------------------------------------------
 static tOplkError writeFileChunk(void)
 {
-    tOplkError          ret;
-    INT                 retflash;
-    tFlashInfo*         pFlashInfo = &drvInstance_l.flashInfo;
-    UINT32              updateImageOffset = firmware_getImageBase(kFirmwareImageUpdate);
-    UINT32              writeOffset;
-    tOplkFileChunkDesc  fileChunkDesc;
+    tOplkError              ret;
+    INT                     retflash;
+    tFlashInfo*             pFlashInfo = &drvInstance_l.flashInfo;
+    UINT32                  updateImageOffset = firmware_getImageBase(kFirmwareImageUpdate);
+    UINT32                  writeOffset;
+    tOplkApiFileChunkDesc   fileChunkDesc;
 
     ret = ctrlk_readFileChunk(&fileChunkDesc, drvInstance_l.fileChunkBufferSize,
                               drvInstance_l.pFileChunkBuffer);
