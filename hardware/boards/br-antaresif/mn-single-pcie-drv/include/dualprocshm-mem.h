@@ -63,8 +63,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define CONFIG_EVENT_SIZE_CIRCBUF_KERNEL_TO_USER    4096
 #define CONFIG_EVENT_SIZE_CIRCBUF_USER_TO_KERNEL    4096
 #define CONFIG_DLLCAL_BUFFER_SIZE_TX_NMT            2048
-#define CONFIG_DLLCAL_BUFFER_SIZE_TX_GEN            2048
+#define CONFIG_DLLCAL_BUFFER_SIZE_TX_GEN            4096
 #define CONFIG_DLLCAL_BUFFER_SIZE_TX_VETH           1024
+#define CONFIG_DLLCAL_BUFFER_SIZE_TX_SYNC           2048
 
 //------------------------------------------------------------------------------
 // typedef
