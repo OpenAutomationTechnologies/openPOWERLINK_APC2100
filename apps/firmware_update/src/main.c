@@ -120,8 +120,9 @@ This is the main function of the openPOWERLINK console MN demo application.
 //------------------------------------------------------------------------------
 int main(int argc, char** argv)
 {
-    tOplkError  ret;
-    tOptions    opts;
+    tOplkError          ret;
+    tOptions            opts;
+    tOplkApiStackInfo   stackInfo;
 
     memset(&opts, 0, sizeof(tOptions));
 
@@ -147,6 +148,18 @@ int main(int argc, char** argv)
         printf("Failed to initialize openPOWERLINK (ret = 0x%X)!\n", ret);
         goto Exit;
     }
+
+    ret = oplk_getStackInfo(&stackInfo);
+    if (ret != kErrorOk)
+    {
+        printf("Failed to get stack information (ret = 0x%X)!\n", ret);
+        goto Exit;
+    }
+
+    printf("User stack version:     0x%08X\n", stackInfo.userVersion);
+    printf("User stack feature:     0x%08X\n", stackInfo.userFeature);
+    printf("Kernel stack version:   0x%08X\n", stackInfo.kernelVersion);
+    printf("Kernel stack feature:   0x%08X\n", stackInfo.kernelFeature);
 
     if (opts.fInvalidateUpdateImage)
     {
