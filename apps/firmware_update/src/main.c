@@ -170,6 +170,8 @@ int main(int argc, char** argv)
             oplk_exit();
             goto Exit;
         }
+
+        printf("\nFirmware invalidated successfully\n");
     }
 
     if (opts.fUpdateImage)
@@ -185,8 +187,8 @@ int main(int argc, char** argv)
 
     if (opts.fFactoryReset || opts.fUpdateReset)
     {
-        printf("Issue firmware reconfiguration to %s image...\n",
-               opts.fFactoryReset ? "FACTORY" : "UPDATE");
+        printf("\nIssue firmware reconfiguration to %s image...\n",
+                opts.fFactoryReset ? "FACTORY" : "UPDATE");
 
         ret = oplk_serviceExecFirmwareReconfig(opts.fFactoryReset);
         if (ret != kErrorOk)
@@ -232,6 +234,14 @@ options at pOpts_p.
 static int getOptions(int argc_p, char** argv_p, tOptions* pOpts_p)
 {
     int opt;
+
+    /* setup default parameters only if no parameters specified*/
+    if (argc_p == 1)
+    {
+        strncpy(pOpts_p->firmwareFile, "image.bin", 256);
+        pOpts_p->fUpdateImage = TRUE;
+        pOpts_p->fUpdateReset = TRUE;
+    }
 
     /* get command line parameters */
     while ((opt = getopt(argc_p, argv_p, "d:efu")) != -1)
@@ -374,6 +384,9 @@ static tOplkError writeImageToKernel(UINT8* pImage_p, UINT length_p)
     tOplkApiFileChunkDesc   desc;
     UINT8*                  pChunk;
     size_t                  chunkSize = oplk_serviceGetFileChunkSize();
+    float                   completePercentage = 0;
+    float                   completedLength;
+    float                   totalLength = (float)(length_p);
 
     if (chunkSize == 0)
     {
@@ -401,11 +414,6 @@ static tOplkError writeImageToKernel(UINT8* pImage_p, UINT length_p)
 
         memcpy(pChunk, pImage_p, desc.length);
 
-        printf("%s() offset=%d length=%d (first=%s last=%s)\n",
-               __func__, desc.offset, desc.length,
-               (desc.fFirst) ? "T" : "F",
-               (desc.fLast)  ? "T" : "F");
-
         ret = oplk_serviceWriteFileChunk(&desc, pChunk);
         if (ret != kErrorOk)
         {
@@ -417,6 +425,12 @@ static tOplkError writeImageToKernel(UINT8* pImage_p, UINT length_p)
         desc.fFirst = FALSE;
         pImage_p += desc.length;
         length_p -= desc.length;
+
+        // Display progress of download
+        completedLength = (float)length_p;
+        completePercentage = (((totalLength - completedLength) / totalLength) * 100.0);
+        printf("\rProgress [%.0f%%]", floor(completePercentage));
+        fflush(stdout);
     }
 
 Exit:
