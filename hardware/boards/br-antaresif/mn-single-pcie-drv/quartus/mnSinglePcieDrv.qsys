@@ -362,7 +362,7 @@
  <parameter name="projectName">mn-single-pcie-drv.qpf</parameter>
  <parameter name="sopcBorderPoints" value="false" />
  <parameter name="systemHash" value="1" />
- <parameter name="timeStamp" value="1441974797202" />
+ <parameter name="timeStamp" value="1446555743398" />
  <parameter name="useTestBenchNamingPattern" value="false" />
  <instanceScript></instanceScript>
  <interface name="clk50" internal="clk50.clk_in" type="clock" dir="end" />
@@ -399,11 +399,7 @@
    internal="openmac_0.rmii"
    type="conduit"
    dir="end" />
- <interface
-   name="openmac_0_mactimerout"
-   internal="openmac_0.macTimerOut"
-   type="conduit"
-   dir="end" />
+ <interface name="openmac_0_mactimerout" internal="openmac_0.macTimerOut" />
  <interface
    name="pcie_rx_in"
    internal="pcie_hard_ip_0.rx_in"
@@ -631,7 +627,7 @@
   <parameter name="gui_rxBufLoc" value="2" />
   <parameter name="gui_rxBufSize" value="1" />
   <parameter name="gui_rxBurstSize" value="1" />
-  <parameter name="gui_tmrCount" value="1" />
+  <parameter name="gui_tmrPulse" value="true" />
   <parameter name="gui_tmrPulseEn" value="false" />
   <parameter name="gui_tmrPulseWdt" value="10" />
   <parameter name="gui_actEn" value="true" />
@@ -1071,13 +1067,6 @@
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
-   kind="interrupt"
-   version="13.0"
-   start="pcie_hard_ip_0.rxm_irq"
-   end="openmac_0.timerIrq">
-  <parameter name="irqNumber" value="0" />
- </connection>
- <connection
    kind="reset"
    version="13.0"
    start="pcie_hard_ip_0.pcie_core_reset"
@@ -1199,6 +1188,13 @@
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x0000" />
   <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="interrupt"
+   version="13.0"
+   start="pcie_hard_ip_0.rxm_irq"
+   end="openmac_0.timerPulse">
+  <parameter name="irqNumber" value="0" />
  </connection>
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
