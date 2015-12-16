@@ -10,7 +10,7 @@ to be used for the platform.
 *******************************************************************************/
 
 /*------------------------------------------------------------------------------
-Copyright (c) 2014, Kalycito Infotech Private Limited
+Copyright (c) 2015, Kalycito Infotech Private Limited
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -54,10 +54,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* BASE ADDRESSES */
 #define SHARED_MEM_BASE             SRAM_0_BASE
 #define SHARED_MEM_SPAN             SRAM_0_SIZE
-#define COMMON_MEM_BASE             ONCHIP_MEMORY2_0_BASE
+#define COMMON_MEM_BASE             PCIE_SUBSYSTEM_ONCHIP_MEMORY_BASE
 #define MEM_ADDR_TABLE_BASE         (COMMON_MEM_BASE + MAX_COMMON_MEM_SIZE)
 #define MEM_INTR_BASE               (MEM_ADDR_TABLE_BASE + MAX_DYNAMIC_BUFF_SIZE)
-#define TARGET_SYNC_INT_BASE        (PCIE_HARD_IP_0_BASE + 0x50)
+#define TARGET_SYNC_INT_BASE        (PCIE_SUBSYSTEM_PCIE_IP_BASE + 0x50)
 
 /* Queue Size */
 #define CONFIG_EVENT_SIZE_CIRCBUF_KERNEL_TO_USER    4096

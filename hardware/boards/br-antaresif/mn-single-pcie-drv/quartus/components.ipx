@@ -2,4 +2,5 @@
 <library>
     <path path="../../../../../oplk/hardware/ipcore/altera/components.ipx" />
     <path path="../../../../../oplk/hardware/ipcore/altera/qsys/mn_pcp.qsys"/>
+    <path path="../../../../../oplk/hardware/ipcore/altera/qsys/pcie_sub.qsys"/>
 </library>

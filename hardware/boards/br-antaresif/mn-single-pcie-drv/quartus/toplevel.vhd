@@ -9,6 +9,7 @@
 -------------------------------------------------------------------------------
 --
 --    (c) B&R, 2014
+--    (c) Kalycito Infotech Private Limited, 2015
 --
 --    Redistribution and use in source and binary forms, with or without
 --    modification, are permitted provided that the following conditions
@@ -147,38 +148,35 @@ architecture rtl of toplevel is
             epcs_flash_sce                              : out   std_logic;
             epcs_flash_sdo                              : out   std_logic;
             epcs_flash_data0                            : in    std_logic;
-            pcie_cal_blk_clk_clk                        : in    std_logic;
-            pcie_rx_in_rx_datain_0                      : in    std_logic;
-            pcie_tx_out_tx_dataout_0                    : out   std_logic;
-            pcie_reconfig_togxb_data                    : in    std_logic_vector(3 downto 0);
-            pcie_reconfig_gxbclk_clk                    : in    std_logic;
-            pcie_reconfig_fromgxb_0_data                : out   std_logic_vector(4 downto 0);
-            pcie_refclk_export                          : in    std_logic;
-            pcie_test_in_test_in                        : in    std_logic_vector(39 downto 0);
-            pcie_rstn_export                            : in    std_logic;
-            pcie_clocks_sim_clk250_export               : out   std_logic;
-            pcie_clocks_sim_clk500_export               : out   std_logic;
-            pcie_clocks_sim_clk125_export               : out   std_logic;
-            pcie_reconfig_busy_busy_altgxb_reconfig     : in    std_logic;
-            pcie_pipe_ext_pipe_mode                     : in    std_logic;
-            pcie_pipe_ext_phystatus_ext                 : in    std_logic;
-            pcie_pipe_ext_rate_ext                      : out   std_logic;
-            pcie_pipe_ext_powerdown_ext                 : out   std_logic_vector(1 downto 0);
-            pcie_pipe_ext_txdetectrx_ext                : out   std_logic;
-            pcie_pipe_ext_rxelecidle0_ext               : in    std_logic;
-            pcie_pipe_ext_rxdata0_ext                   : in    std_logic_vector(7 downto 0);
-            pcie_pipe_ext_rxstatus0_ext                 : in    std_logic_vector(2 downto 0);
-            pcie_pipe_ext_rxvalid0_ext                  : in    std_logic;
-            pcie_pipe_ext_rxdatak0_ext                  : in    std_logic;
-            pcie_pipe_ext_txdata0_ext                   : out   std_logic_vector(7 downto 0);
-            pcie_pipe_ext_txdatak0_ext                  : out   std_logic;
-            pcie_pipe_ext_rxpolarity0_ext               : out   std_logic;
-            pcie_pipe_ext_txcompl0_ext                  : out   std_logic;
-            pcie_pipe_ext_txelecidle0_ext               : out   std_logic;
-            pcie_powerdown_pll_powerdown                : in    std_logic;
-            pcie_powerdown_gxb_powerdown                : in    std_logic;
-            pcie_test_out_test_out                      : out   std_logic_vector(8 downto 0);
-            host_benchmark_pio_export                   : out   std_logic_vector(7 downto 0);
+            pcie_ip_rx_in_rx_datain_0                   : in    std_logic                     := 'X';             -- rx_datain_0
+            pcie_ip_tx_out_tx_dataout_0                 : out   std_logic;                                        -- tx_dataout_0
+            pcie_ip_reconfig_togxb_data                 : in    std_logic_vector(3 downto 0)  := (others => 'X'); -- data
+            pcie_ip_reconfig_fromgxb_0_data             : out   std_logic_vector(4 downto 0);                     -- data
+            pcie_ip_refclk_export                       : in    std_logic                     := 'X';
+            pcie_ip_test_in_test_in                     : in    std_logic_vector(39 downto 0);
+            pcie_ip_pcie_rstn_export                    : in    std_logic                     := 'X';             -- export
+            pcie_ip_clocks_sim_clk250_export            : out   std_logic;                                        -- clk250_export
+            pcie_ip_clocks_sim_clk500_export            : out   std_logic;                                        -- clk500_export
+            pcie_ip_clocks_sim_clk125_export            : out   std_logic;                                        -- clk125_export
+            pcie_ip_reconfig_busy_busy_altgxb_reconfig  : in    std_logic                     := 'X';             -- busy_altgxb_reconfig
+            pcie_ip_pipe_ext_pipe_mode                  : in    std_logic                     := 'X';             -- pipe_mode
+            pcie_ip_pipe_ext_phystatus_ext              : in    std_logic                     := 'X';             -- phystatus_ext
+            pcie_ip_pipe_ext_rate_ext                   : out   std_logic;                                        -- rate_ext
+            pcie_ip_pipe_ext_powerdown_ext              : out   std_logic_vector(1 downto 0);                     -- powerdown_ext
+            pcie_ip_pipe_ext_txdetectrx_ext             : out   std_logic;                                        -- txdetectrx_ext
+            pcie_ip_pipe_ext_rxelecidle0_ext            : in    std_logic                     := 'X';             -- rxelecidle0_ext
+            pcie_ip_pipe_ext_rxdata0_ext                : in    std_logic_vector(7 downto 0)  := (others => 'X'); -- rxdata0_ext
+            pcie_ip_pipe_ext_rxstatus0_ext              : in    std_logic_vector(2 downto 0)  := (others => 'X'); -- rxstatus0_ext
+            pcie_ip_pipe_ext_rxvalid0_ext               : in    std_logic                     := 'X';             -- rxvalid0_ext
+            pcie_ip_pipe_ext_rxdatak0_ext               : in    std_logic                     := 'X';             -- rxdatak0_ext
+            pcie_ip_pipe_ext_txdata0_ext                : out   std_logic_vector(7 downto 0);                     -- txdata0_ext
+            pcie_ip_pipe_ext_txdatak0_ext               : out   std_logic;                                        -- txdatak0_ext
+            pcie_ip_pipe_ext_rxpolarity0_ext            : out   std_logic;                                        -- rxpolarity0_ext
+            pcie_ip_pipe_ext_txcompl0_ext               : out   std_logic;                                        -- txcompl0_ext
+            pcie_ip_pipe_ext_txelecidle0_ext            : out   std_logic;                                        -- txelecidle0_ext
+            pcie_ip_powerdown_pll_powerdown             : in    std_logic                     := 'X';             -- pll_powerdown
+            pcie_ip_powerdown_gxb_powerdown             : in    std_logic                     := 'X';             -- gxb_powerdown
+            pcie_0_benchmark_pio_export                 : out   std_logic_vector(7 downto 0);
             pcp_0_cpu_resetrequest_resetrequest         : in    std_logic;
             pcp_0_cpu_resetrequest_resettaken           : out   std_logic;
             pcp_0_powerlink_led_export                  : out   std_logic_vector(1 downto 0);
@@ -265,73 +263,70 @@ begin
 
     inst : component mnSinglePcieDrv
         port map (
-            clk25_clk                               => clk25,
-            clk50_clk                               => clk50,
-            clk100_clk                              => clk100,
-            clk125_clk                              => clk125,
-            reset_reset_n                           => pllLocked,
+            clk25_clk                                   => clk25,
+            clk50_clk                                   => clk50,
+            clk100_clk                                  => clk100,
+            clk125_clk                                  => clk125,
+            reset_reset_n                               => pllLocked,
 
-            pcp_0_cpu_resetrequest_resetrequest     => '0',
-            pcp_0_cpu_resetrequest_resettaken       => open,
+            pcp_0_cpu_resetrequest_resetrequest         => '0',
+            pcp_0_cpu_resetrequest_resettaken           => open,
 
-            tri_state_0_tcm_address_out             => oPlkRamAddr,
-            tri_state_0_tcm_read_n_out              => onPlkRamOE,
-            tri_state_0_tcm_byteenable_n_out        => onPlkRamBE,
-            tri_state_0_tcm_write_n_out             => onPlkRamWE,
-            tri_state_0_tcm_data_out                => bPlkRamData,
-            tri_state_0_tcm_chipselect_n_out        => open,
+            tri_state_0_tcm_address_out                 => oPlkRamAddr,
+            tri_state_0_tcm_read_n_out                  => onPlkRamOE,
+            tri_state_0_tcm_byteenable_n_out            => onPlkRamBE,
+            tri_state_0_tcm_write_n_out                 => onPlkRamWE,
+            tri_state_0_tcm_data_out                    => bPlkRamData,
+            tri_state_0_tcm_chipselect_n_out            => open,
 
-            pcp_0_benchmark_pio_export              => open,
+            pcp_0_benchmark_pio_export                  => open,
 
-            openmac_0_smi_nPhyRst                   => onPlkPhyRst,
-            openmac_0_smi_clk                       => oMDCPlkPhy,
-            openmac_0_smi_dio                       => bMDIOPlkPhy,
-            openmac_0_rmii_txEnable                 => oRmiiTxEn,
-            openmac_0_rmii_txData                   => oRmiiTxData,
-            openmac_0_rmii_rxError                  => iRmiiRxErr,
-            openmac_0_rmii_rxCrsDataValid           => iRmiiCrsDv,
-            openmac_0_rmii_rxData                   => iRmiiRxData,
-            openmac_0_pktactivity_export            => macActivity,
+            openmac_0_smi_nPhyRst                       => onPlkPhyRst,
+            openmac_0_smi_clk                           => oMDCPlkPhy,
+            openmac_0_smi_dio                           => bMDIOPlkPhy,
+            openmac_0_rmii_txEnable                     => oRmiiTxEn,
+            openmac_0_rmii_txData                       => oRmiiTxData,
+            openmac_0_rmii_rxError                      => iRmiiRxErr,
+            openmac_0_rmii_rxCrsDataValid               => iRmiiCrsDv,
+            openmac_0_rmii_rxData                       => iRmiiRxData,
+            openmac_0_pktactivity_export                => macActivity,
 
-            epcs_flash_dclk                         => oFlash_Clk,
-            epcs_flash_sce                          => oFlash_nCS,
-            epcs_flash_sdo                          => oFlash_DI,
-            epcs_flash_data0                        => iFlash_DO,
+            epcs_flash_dclk                             => oFlash_Clk,
+            epcs_flash_sce                              => oFlash_nCS,
+            epcs_flash_sdo                              => oFlash_DI,
+            epcs_flash_data0                            => iFlash_DO,
 
-            pcie_cal_blk_clk_clk                    => clk50,
-            pcie_rx_in_rx_datain_0                  => iPCIe_Rx1p,
-            pcie_tx_out_tx_dataout_0                => oPCIe_Tx1p,
-            pcie_reconfig_togxb_data                => reconfigToGxb,
-            pcie_reconfig_gxbclk_clk                => clk50,
-            pcie_reconfig_fromgxb_0_data            => reconfigFromGxb,
-            pcie_reconfig_busy_busy_altgxb_reconfig => reconfigBusy,
-            pcie_refclk_export                      => iPCIe_RefClk_p,
-            pcie_test_in_test_in                    => (others => cInactivated),
-            pcie_rstn_export                        => pllLocked,
-            pcie_clocks_sim_clk250_export           => open,
-            pcie_clocks_sim_clk500_export           => open,
-            pcie_clocks_sim_clk125_export           => open,
-            pcie_pipe_ext_pipe_mode                 => cInactivated,
-            pcie_pipe_ext_phystatus_ext             => cInactivated,
-            pcie_pipe_ext_rate_ext                  => open,
-            pcie_pipe_ext_powerdown_ext             => open,
-            pcie_pipe_ext_txdetectrx_ext            => open,
-            pcie_pipe_ext_rxelecidle0_ext           => cInactivated,
-            pcie_pipe_ext_rxdata0_ext               => (others => cInactivated),
-            pcie_pipe_ext_rxstatus0_ext             => (others => cInactivated),
-            pcie_pipe_ext_rxvalid0_ext              => cInactivated,
-            pcie_pipe_ext_rxdatak0_ext              => cInactivated,
-            pcie_pipe_ext_txdata0_ext               => open,
-            pcie_pipe_ext_txdatak0_ext              => open,
-            pcie_pipe_ext_rxpolarity0_ext           => open,
-            pcie_pipe_ext_txcompl0_ext              => open,
-            pcie_pipe_ext_txelecidle0_ext           => open,
-            pcie_powerdown_pll_powerdown            => cInactivated,
-            pcie_powerdown_gxb_powerdown            => cInactivated,
-            pcie_test_out_test_out                  => open,
-            host_benchmark_pio_export               => open,
-            pcp_0_powerlink_led_export              => plkSeLed,
-            testport_pio_export                     => testport
+            pcie_ip_rx_in_rx_datain_0                   => iPCIe_Rx1p,
+            pcie_ip_tx_out_tx_dataout_0                 => oPCIe_Tx1p,
+            pcie_ip_reconfig_togxb_data                 => reconfigToGxb,
+            pcie_ip_reconfig_fromgxb_0_data             => reconfigFromGxb,
+            pcie_ip_reconfig_busy_busy_altgxb_reconfig  => reconfigBusy,
+            pcie_ip_refclk_export                       => iPCIe_RefClk_p,
+            pcie_ip_test_in_test_in                     => (others => cInactivated),
+            pcie_ip_pcie_rstn_export                    => pllLocked,
+            pcie_ip_clocks_sim_clk250_export            => open,
+            pcie_ip_clocks_sim_clk500_export            => open,
+            pcie_ip_clocks_sim_clk125_export            => open,
+            pcie_ip_pipe_ext_pipe_mode                  => cInactivated,
+            pcie_ip_pipe_ext_phystatus_ext              => cInactivated,
+            pcie_ip_pipe_ext_rate_ext                   => open,
+            pcie_ip_pipe_ext_powerdown_ext              => open,
+            pcie_ip_pipe_ext_txdetectrx_ext             => open,
+            pcie_ip_pipe_ext_rxelecidle0_ext            => cInactivated,
+            pcie_ip_pipe_ext_rxdata0_ext                => (others => cInactivated),
+            pcie_ip_pipe_ext_rxstatus0_ext              => (others => cInactivated),
+            pcie_ip_pipe_ext_rxvalid0_ext               => cInactivated,
+            pcie_ip_pipe_ext_rxdatak0_ext               => cInactivated,
+            pcie_ip_pipe_ext_txdata0_ext                => open,
+            pcie_ip_pipe_ext_txdatak0_ext               => open,
+            pcie_ip_pipe_ext_rxpolarity0_ext            => open,
+            pcie_ip_pipe_ext_txcompl0_ext               => open,
+            pcie_ip_pipe_ext_txelecidle0_ext            => open,
+            pcie_ip_powerdown_pll_powerdown             => cInactivated,
+            pcie_ip_powerdown_gxb_powerdown             => cInactivated,
+            pcie_0_benchmark_pio_export                 => open,
+            pcp_0_powerlink_led_export                  => plkSeLed,
+            testport_pio_export                         => testport
         );
 
     -- Pll Instance
