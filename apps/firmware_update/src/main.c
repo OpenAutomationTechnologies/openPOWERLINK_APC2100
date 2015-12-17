@@ -244,7 +244,7 @@ static int getOptions(int argc_p, char** argv_p, tOptions* pOpts_p)
     }
 
     /* get command line parameters */
-    while ((opt = getopt(argc_p, argv_p, "d:efu")) != -1)
+    while ((opt = getopt(argc_p, argv_p, "d:efuv")) != -1)
     {
         switch (opt)
         {
@@ -267,12 +267,18 @@ static int getOptions(int argc_p, char** argv_p, tOptions* pOpts_p)
                 pOpts_p->fUpdateReset = TRUE;
                 break;
 
+            case 'v':
+                // This will allow to view the kernel stack information without
+                // performing any firmware update or invalidation.
+                break;
+
             default: /* '?' */
                 printf("Usage: %s [COMMAND] \n"
                        "-d <UPDATE_IMAGE>: Download update image to IF card\n"
                        "-e : Invalidate the existing update image\n"
                        "-f : Reset to factory image\n"
                        "-u : Reset to update image\n",
+                       "-v : View kernel stack information\n",
                        argv_p[0]);
                 return -1;
         }
