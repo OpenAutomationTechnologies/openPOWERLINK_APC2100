@@ -3,6 +3,7 @@
 # Generic CMake options openPOWERLINK demo applications
 #
 # Copyright (c) 2015, Bernecker+Rainer Industrie-Elektronik Ges.m.b.H. (B&R)
+# Copyright (c) 2015, Kalycito Infotech Private Limited
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -53,6 +54,7 @@ INCLUDE(CMakeDependentOption)
 
 # include project specific modules
 INCLUDE(findoplklib)
+INCLUDE(linkoplklib)
 
 ################################################################################
 # Set options
@@ -86,6 +88,8 @@ INCLUDE_DIRECTORIES (
     ${COMMON_SOURCE_DIR}
 )
 
-IF(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+IF(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    INCLUDE(configure-linux)
+ELSEIF(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     INCLUDE(configure-windows)
 ENDIF()

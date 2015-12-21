@@ -61,11 +61,17 @@ ADD_DEFINITIONS(-DCONFIG_MN)
 ################################################################################
 # Setup compile definitions depending on configuration
 
+IF (CFG_KERNEL_STACK_PCIE_INTF)
+    ADD_DEFINITIONS(-D__LINUX_PCIE__)
+ENDIF()
+
 ################################################################################
 # Setup the architecture specific definitions
 
 IF(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     include (windows.cmake)
+ELSEIF(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    include (linux.cmake)
 ELSE()
     MESSAGE(FATAL_ERROR "System ${CMAKE_SYSTEM_NAME} is not supported!")
 ENDIF()
@@ -86,7 +92,7 @@ SET_PROPERTY(TARGET firmware_update
 ################################################################################
 # Libraries to link
 
-TARGET_LINK_LIBRARIES(firmware_update optimized ${OPLKLIB} debug ${OPLKLIB_DEBUG})
+OPLK_LINK_LIBRARIES(firmware_update)
 TARGET_LINK_LIBRARIES(firmware_update ${ARCH_LIBRARIES})
 
 ################################################################################
