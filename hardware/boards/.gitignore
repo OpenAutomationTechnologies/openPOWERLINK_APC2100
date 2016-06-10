@@ -5,6 +5,7 @@
 .qsys_edit/
 db/
 incremental_db/
+mnSinglePcieDrv/
 ## Files
 *.bak
 *.bsf
@@ -13,6 +14,7 @@ incremental_db/
 *.done
 *.html
 *.jdi
+*.log
 *.pin
 *.qws
 *.rpt
@@ -23,20 +25,4 @@ incremental_db/
 *.pof
 *.txt
 
-# Xilinx Platform Studio
-## Dirs
-__xps/
-bootloops/
-hdl/
-implementation/
-pcores/
-SDK/
-synthesis/
-## Files
-*.log
-*.opt
-*.make
-*.filters
-*.gui
-*.xdc
-*.ucf
+*_epcs_flash_controller_boot_rom.hex
