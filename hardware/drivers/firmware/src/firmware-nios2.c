@@ -45,6 +45,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <system.h>
 #include <io.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 // Check if system.h provides the REMOTE_UPDATE parameters.
 #if defined(REMOTE_UPDATE_BASE)
