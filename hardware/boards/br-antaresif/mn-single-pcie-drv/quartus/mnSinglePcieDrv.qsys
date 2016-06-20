@@ -25,6 +25,19 @@
          type = "boolean";
       }
    }
+   element atomicmodify_1
+   {
+      datum _sortIndex
+      {
+         value = "13";
+         type = "int";
+      }
+      datum sopceditor_expanded
+      {
+         value = "0";
+         type = "boolean";
+      }
+   }
    element clk100
    {
       datum _sortIndex
@@ -180,6 +193,19 @@
          type = "boolean";
       }
    }
+   element atomicmodify_1.s0
+   {
+      datum _lockedAddress
+      {
+         value = "1";
+         type = "boolean";
+      }
+      datum baseAddress
+      {
+         value = "524288";
+         type = "String";
+      }
+   }
    element atomicmodify_0.s0
    {
       datum _lockedAddress
@@ -231,7 +257,7 @@
    {
       datum _sortIndex
       {
-         value = "13";
+         value = "14";
          type = "int";
       }
       datum sopceditor_expanded
@@ -281,7 +307,7 @@
  <parameter name="projectName">mn-single-pcie-drv.qpf</parameter>
  <parameter name="sopcBorderPoints" value="false" />
  <parameter name="systemHash" value="1" />
- <parameter name="timeStamp" value="1450687098045" />
+ <parameter name="timeStamp" value="1466436312583" />
  <parameter name="useTestBenchNamingPattern" value="false" />
  <instanceScript></instanceScript>
  <interface name="clk50" internal="clk50.clk_in" type="clock" dir="end" />
@@ -553,17 +579,7 @@
   <parameter name="clockFrequency" value="25000000" />
   <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone IV GX" />
  </module>
- <module
-   kind="pcie_sub"
-   version="1.0"
-   enabled="1"
-   name="pcie_subsystem">
-  <parameter name="vendor_id" value="5751" />
-  <parameter name="device_id" value="59401" />
-  <parameter name="revision_id" value="1" />
-  <parameter name="class_code" value="557104" />
-  <parameter name="subsystem_vendor_id" value="5751" />
-  <parameter name="subsystem_id" value="58658" />
+ <module kind="pcie_sub" version="1.0" enabled="1" name="pcie_subsystem">
   <parameter name="AUTO_GENERATION_ID" value="0" />
   <parameter name="AUTO_UNIQUE_ID">$${FILENAME}_pcie_subsystem</parameter>
   <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone IV GX" />
@@ -577,6 +593,12 @@
   <parameter name="AUTO_PCIE_IP_FIXEDCLK_CLOCK_RATE" value="125000000" />
   <parameter name="AUTO_PCIE_IP_FIXEDCLK_CLOCK_DOMAIN" value="2" />
   <parameter name="AUTO_PCIE_IP_FIXEDCLK_RESET_DOMAIN" value="2" />
+  <parameter name="vendor_id" value="5751" />
+  <parameter name="device_id" value="59401" />
+  <parameter name="revision_id" value="1" />
+  <parameter name="class_code" value="557104" />
+  <parameter name="subsystem_vendor_id" value="5751" />
+  <parameter name="subsystem_id" value="58658" />
  </module>
  <module kind="clock_source" version="13.0" enabled="1" name="clk125">
   <parameter name="clockFrequency" value="125000000" />
@@ -603,6 +625,10 @@
   <parameter name="clockRate" value="50000000" />
  </module>
  <module kind="atomicmodify" version="1.1.0" enabled="1" name="atomicmodify_0">
+  <parameter name="sys_m0Addrw" value="19" />
+  <parameter name="AUTO_C0_CLOCK_RATE" value="100000000" />
+ </module>
+ <module kind="atomicmodify" version="1.1.0" enabled="1" name="atomicmodify_1">
   <parameter name="sys_m0Addrw" value="19" />
   <parameter name="AUTO_C0_CLOCK_RATE" value="100000000" />
  </module>
@@ -876,6 +902,34 @@
    end="openmac_0.timerPulse">
   <parameter name="irqNumber" value="0" />
  </connection>
+ <connection
+   kind="avalon"
+   version="13.0"
+   start="atomicmodify_1.m0"
+   end="sram_0.uas">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="13.0"
+   start="pcie_subsystem.bar0"
+   end="atomicmodify_1.s0">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x00080000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="clock"
+   version="13.0"
+   start="clk100.clk"
+   end="atomicmodify_1.c0" />
+ <connection
+   kind="reset"
+   version="13.0"
+   start="clk25.clk_reset"
+   end="atomicmodify_1.r0" />
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
 </system>
