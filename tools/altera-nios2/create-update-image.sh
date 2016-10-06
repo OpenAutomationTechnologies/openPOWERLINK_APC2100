@@ -80,7 +80,7 @@ rm -rf ${HW_FILE}.flash ${SW_FILE}.flash ${IMG_FILE}.flash
 
 # Add header to binary file
 CMD="\
-./${MAKE_HEADER_PL} \
+perl ./${MAKE_HEADER_PL} \
 ${IMG_FILE}.bin ${IMG_FILE}_hdr.bin \
 ${SIGNATUR} ${VERSION} ${OPLK_VERSION} ${OPLK_FEATURE} \
 "
