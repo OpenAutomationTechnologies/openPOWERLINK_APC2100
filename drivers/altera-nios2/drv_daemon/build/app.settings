@@ -43,6 +43,7 @@ ${APC_BASE_DIR}/contrib/prodtest/prodtest.c \
 APP_INCLUDES="\
 ${OPLK_BASE_DIR}/stack/include \
 ${OPLK_BASE_DIR}/stack/include/kernel \
+${OPLK_BASE_DIR}/contrib \
 ${APC_BASE_DIR}/hardware/drivers/flash/include \
 ${APC_BASE_DIR}/hardware/drivers/firmware/include \
 ${APC_BASE_DIR}/contrib/prodtest \
