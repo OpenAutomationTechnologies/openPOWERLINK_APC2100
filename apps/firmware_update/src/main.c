@@ -51,6 +51,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <getopt/getopt.h>
 #include <console/console.h>
 
+#include <math.h> // For floor()
+
 //============================================================================//
 //            G L O B A L   D E F I N I T I O N S                             //
 //============================================================================//
@@ -277,7 +279,7 @@ static int getOptions(int argc_p, char** argv_p, tOptions* pOpts_p)
                        "-d <UPDATE_IMAGE>: Download update image to IF card\n"
                        "-e : Invalidate the existing update image\n"
                        "-f : Reset to factory image\n"
-                       "-u : Reset to update image\n",
+                       "-u : Reset to update image\n"
                        "-v : View kernel stack information\n",
                        argv_p[0]);
                 return -1;
